@@ -1,0 +1,1 @@
+// This hook has been removed - Etherlink support discontinued

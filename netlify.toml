@@ -1,0 +1,38 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["pg"]
+
+[[redirects]]
+  from = "/api/auth"
+  to = "/.netlify/functions/auth"
+  status = 200
+
+[[redirects]]
+  from = "/api/auth/*"
+  to = "/.netlify/functions/auth"
+  status = 200
+
+[[redirects]]
+  from = "/api/cards/test-cardholders"
+  to = "/.netlify/functions/cards-cardholders"
+  status = 200
+
+[[redirects]]
+  from = "/api/cards/test-issue"
+  to = "/.netlify/functions/cards-issue"
+  status = 200
+
+[[redirects]]
+  from = "/api/cards/test-details"
+  to = "/.netlify/functions/cards-details"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cross-Origin-Opener-Policy = "same-origin-allow-popups"

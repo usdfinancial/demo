@@ -1,0 +1,275 @@
+{
+  "passed": [
+    {
+      "message": "Parameterized queries detected in database layer",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.308Z"
+    },
+    {
+      "message": "SSL certificate validation enabled",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.308Z"
+    },
+    {
+      "message": "Database connection pooling implemented",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.308Z"
+    },
+    {
+      "message": "Parameterized queries detected in database layer",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "SSL certificate validation enabled",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "Database connection pooling implemented",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/health/route.ts: Input validation detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/investments/route.ts: Rate limiting detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/user/route.ts: Authentication middleware detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/user/route.ts: Rate limiting detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/user/route.ts: Input validation detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/user/route.ts: Resource access control detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    }
+  ],
+  "failed": [
+    {
+      "message": "amplify/backend/function/api/src/routes/signin.js: Password directly from request parameters",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:34:22.219Z"
+    },
+    {
+      "message": "amplify/backend/function/api/src/routes/signup.js: Password directly from request parameters",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:34:22.219Z"
+    },
+    {
+      "message": "scripts/security-audit.js: Found rejectUnauthorized: false - potential MITM vulnerability",
+      "details": "Found 2 occurrence(s)",
+      "timestamp": "2025-08-27T03:34:22.227Z"
+    },
+    {
+      "message": "scripts/security-audit.js: Use of eval() detected - potential code injection",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:34:22.227Z"
+    },
+    {
+      "message": "scripts/seed-demo-user.js: Found rejectUnauthorized: false - potential MITM vulnerability",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:34:22.227Z"
+    },
+    {
+      "message": "scripts/test-database.js: Found rejectUnauthorized: false - potential MITM vulnerability",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:34:22.229Z"
+    },
+    {
+      "message": "src/lib/middleware/rateLimiting.ts: Use of eval() detected - potential code injection",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:34:22.301Z"
+    },
+    {
+      "message": "src/app/api/investments/route.ts: Potential IDOR vulnerability",
+      "details": "User ID accessed without ownership verification",
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/transactions/route.ts: Potential IDOR vulnerability",
+      "details": "User ID accessed without ownership verification",
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    }
+  ],
+  "warnings": [
+    {
+      "message": "No .env.local file found",
+      "details": "Copy .env.security.template to .env.local",
+      "timestamp": "2025-08-27T03:33:18.848Z"
+    },
+    {
+      "message": ".next/server/app/accounts/abstract/page.js: Potential environment variable logging",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:33:21.275Z"
+    },
+    {
+      "message": ".next/server/app/bridge/page.js: Potential environment variable logging",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:33:21.385Z"
+    },
+    {
+      "message": ".next/server/chunks/1043.js: Potential environment variable logging",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:33:30.045Z"
+    },
+    {
+      "message": ".next/server/chunks/3047.js: Potential environment variable logging",
+      "details": "Found 2 occurrence(s)",
+      "timestamp": "2025-08-27T03:33:30.086Z"
+    },
+    {
+      "message": ".next/server/chunks/8236.js: Potential environment variable logging",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:33:41.072Z"
+    },
+    {
+      "message": ".next/server/chunks/8548.js: Potential environment variable logging",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:33:41.074Z"
+    },
+    {
+      "message": ".next/standalone/.next/server/app/accounts/abstract/page.js: Potential environment variable logging",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:33:41.312Z"
+    },
+    {
+      "message": ".next/standalone/.next/server/app/bridge/page.js: Potential environment variable logging",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:33:41.328Z"
+    },
+    {
+      "message": ".next/standalone/.next/server/chunks/1043.js: Potential environment variable logging",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:33:50.076Z"
+    },
+    {
+      "message": ".next/standalone/.next/server/chunks/3047.js: Potential environment variable logging",
+      "details": "Found 2 occurrence(s)",
+      "timestamp": "2025-08-27T03:33:50.121Z"
+    },
+    {
+      "message": ".next/standalone/.next/server/chunks/8236.js: Potential environment variable logging",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:34:01.316Z"
+    },
+    {
+      "message": ".next/standalone/.next/server/chunks/8548.js: Potential environment variable logging",
+      "details": "Found 1 occurrence(s)",
+      "timestamp": "2025-08-27T03:34:01.320Z"
+    },
+    {
+      "message": "src/app/api/assets/route.ts: No authentication middleware detected",
+      "details": "Consider adding authentication if needed",
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/assets/route.ts: No rate limiting detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/assets/route.ts: No input validation detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/health/route.ts: No authentication middleware detected",
+      "details": "Consider adding authentication if needed",
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/health/route.ts: No rate limiting detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/investments/route.ts: No authentication middleware detected",
+      "details": "Consider adding authentication if needed",
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/investments/route.ts: No input validation detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/transactions/route.ts: No authentication middleware detected",
+      "details": "Consider adding authentication if needed",
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/transactions/route.ts: No rate limiting detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "src/app/api/transactions/route.ts: No input validation detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "Content-Security-Policy security header not found",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "Strict-Transport-Security security header not found",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "X-Content-Type-Options security header not found",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "X-Frame-Options security header not found",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "X-XSS-Protection security header not found",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    },
+    {
+      "message": "No CORS configuration detected",
+      "details": null,
+      "timestamp": "2025-08-27T03:34:22.309Z"
+    }
+  ],
+  "info": [
+    {
+      "message": "Could not run npm audit",
+      "details": "Command failed: npm audit --json",
+      "timestamp": "2025-08-27T03:33:21.061Z"
+    },
+    {
+      "message": "database/migrations/ permissions: 755",
+      "details": null,
+      "timestamp": "2025-08-27T03:33:21.061Z"
+    },
+    {
+      "message": "scripts/ permissions: 755",
+      "details": null,
+      "timestamp": "2025-08-27T03:33:21.062Z"
+    }
+  ]
+}

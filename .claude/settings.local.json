@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run type-check:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run lint)",
+      "Bash(node:*)",
+      "WebFetch(domain:react.dev)",
+      "Bash(chmod:*)",
+      "Bash(npm run:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.alchemy.com)",
+      "WebFetch(domain:www.alchemy.com)",
+      "WebFetch(domain:accountkit.alchemy.com)",
+      "Bash(rm:*)",
+      "Bash(npm install:*)",
+      "Bash(grep:*)",
+      "Bash(git checkout:*)",
+      "Bash(npm test:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(psql:*)",
+      "WebFetch(domain:docs.stripe.com)",
+      "Bash(git push:*)",
+      "Bash(git remote get-url:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(find:*)",
+      "Bash(timeout 60 npm run build:*)",
+      "WebFetch(domain:docs.withpersona.com)",
+      "Bash(netlify:*)",
+      "Bash(npx next:*)",
+      "Bash(sed:*)",
+      "Bash(cat:*)",
+      "Bash(npm:*)",
+      "Bash(./node_modules/.bin/tsc:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

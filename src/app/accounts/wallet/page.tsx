@@ -38,6 +38,7 @@ import { EnhancedWithdrawModal } from '@/components/wallet/EnhancedWithdrawModal
 import { MultiChainDepositModal } from '@/components/wallet/MultiChainDepositModal'
 import { MultiChainWithdrawModal } from '@/components/wallet/MultiChainWithdrawModal'
 import { TransactionReceiptModal } from '@/components/wallet/TransactionReceiptModal'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 // Simple error boundary class component
 class WalletErrorBoundary extends Component<
@@ -113,6 +114,8 @@ export default function WalletPage() {
   const [isPriceLoading, setIsPriceLoading] = useState(false)
   const [ethPrice, setEthPrice] = useState(2500)
   const [userProfile, setUserProfile] = useState<any>(null)
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
 
   useEffect(() => {
     if (user?.email) {
@@ -137,6 +140,58 @@ export default function WalletPage() {
     setTimeout(() => {
       setIsRefreshing(false)
     }, 1000)
+  }
+
+  // Demo function for wallet settings
+  const handleWalletSettings = () => {
+    setShowSettingsModal(true)
+    // Auto-close after 3 seconds for demo
+    setTimeout(() => setShowSettingsModal(false), 3000)
+  }
+
+  // Demo function for copying wallet addresses
+  const handleCopyAddress = async (address: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(address)
+      setCopiedAddress(type)
+      setTimeout(() => setCopiedAddress(null), 2000)
+      
+      // Show demo notification
+      console.log(`✅ Demo: Copied ${type} address to clipboard: ${address}`)
+    } catch (err) {
+      console.error('Failed to copy address:', err)
+    }
+  }
+
+  // Demo function for viewing on blockchain explorer
+  const handleViewOnExplorer = (address: string, networkId: string = 'sepolia') => {
+    const explorerUrls = {
+      sepolia: 'https://sepolia.etherscan.io/address/',
+      ethereum: 'https://etherscan.io/address/',
+      polygon: 'https://polygonscan.com/address/',
+      arbitrum: 'https://arbiscan.io/address/',
+      optimism: 'https://optimistic.etherscan.io/address/'
+    }
+    
+    const baseUrl = explorerUrls[networkId as keyof typeof explorerUrls] || explorerUrls.sepolia
+    const explorerUrl = `${baseUrl}${address}`
+    
+    console.log(`🔍 Demo: Opening explorer for ${address} on ${networkId}`)
+    console.log(`🌐 Explorer URL: ${explorerUrl}`)
+    
+    // In a real app, this would open the URL
+    // window.open(explorerUrl, '_blank')
+    
+    // For demo, show a notification
+    alert(`Demo: Would open blockchain explorer for address ${address.slice(0, 6)}...${address.slice(-4)} on ${networkId} network`)
+  }
+
+  // Demo function for showing QR code
+  const handleShowQRCode = (address: string, type: string) => {
+    console.log(`📱 Demo: Showing QR code for ${type} address: ${address}`)
+    
+    // For demo, show a notification
+    alert(`Demo: QR Code for ${type}\n\nAddress: ${address}\n\nIn a real app, this would display a scannable QR code for easy mobile wallet transfers.`)
   }
 
   // Monitor authentication state changes
@@ -562,7 +617,11 @@ export default function WalletPage() {
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Refresh
                   </Button>
-                  <Button variant="outline" className="bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white">
+                  <Button 
+                    variant="outline" 
+                    className="bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white"
+                    onClick={handleWalletSettings}
+                  >
                     <Settings className="w-4 h-4 mr-2" />
                     Settings
                   </Button>
@@ -660,10 +719,10 @@ export default function WalletPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigator.clipboard.writeText(user.walletAddress || user.smartWalletAddress || '')}
+                          onClick={() => handleCopyAddress(user.walletAddress || user.smartWalletAddress || '', 'Smart Wallet')}
                           className="ml-3 h-8 w-8 p-0 hover:bg-emerald-100"
                         >
-                          <Copy className="w-4 h-4 text-emerald-600" />
+                          <Copy className={`w-4 h-4 ${copiedAddress === 'Smart Wallet' ? 'text-emerald-800' : 'text-emerald-600'}`} />
                         </Button>
                       </div>
                     </div>
@@ -687,10 +746,10 @@ export default function WalletPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigator.clipboard.writeText(user.eoaAddress || user.address || '')}
+                          onClick={() => handleCopyAddress(user.eoaAddress || user.address || '', 'EOA Backup')}
                           className="ml-3 h-8 w-8 p-0 hover:bg-blue-100"
                         >
-                          <Copy className="w-4 h-4 text-blue-600" />
+                          <Copy className={`w-4 h-4 ${copiedAddress === 'EOA Backup' ? 'text-blue-800' : 'text-blue-600'}`} />
                         </Button>
                       </div>
                     </div>
@@ -1206,8 +1265,49 @@ export default function WalletPage() {
           transaction={selectedTransaction}
         />
       )}
-        </div>
-      </WalletErrorBoundary>
-    </AuthGuard>
+
+      {/* Settings Modal */}
+      <Dialog open={showSettingsModal} onOpenChange={setShowSettingsModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Settings className="w-5 h-5 text-emerald-600" />
+              Wallet Settings
+            </DialogTitle>
+            <DialogDescription>
+              Demo wallet configuration options
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
+              <div>
+                <p className="font-medium text-emerald-900">Demo Mode</p>
+                <p className="text-sm text-emerald-700">Interactive demonstration active</p>
+              </div>
+              <Badge className="bg-emerald-100 text-emerald-800">Active</Badge>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-gray-700">Available Settings:</p>
+              <ul className="text-sm text-gray-600 space-y-1 ml-4">
+                <li>• Network preferences</li>
+                <li>• Transaction notifications</li>
+                <li>• Security settings</li>
+                <li>• Backup & recovery</li>
+              </ul>
+            </div>
+            <div className="pt-4 border-t">
+              <Button 
+                onClick={() => setShowSettingsModal(false)} 
+                className="w-full bg-emerald-600 hover:bg-emerald-700"
+              >
+                Close Settings
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  </WalletErrorBoundary>
+</AuthGuard>
   )
 }

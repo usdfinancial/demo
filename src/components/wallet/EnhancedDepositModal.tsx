@@ -38,6 +38,7 @@ interface Network {
   fee: number
   icon: string
   isTestnet?: boolean
+  minimumWithdrawal: number
 }
 
 interface EnhancedDepositModalProps {
@@ -92,9 +93,40 @@ export function EnhancedDepositModal({
       await navigator.clipboard.writeText(address)
       setCopiedAddress(type)
       setTimeout(() => setCopiedAddress(null), 2000)
+      console.log(`✅ Demo: Copied ${type} address to clipboard: ${address}`)
     } catch (err) {
       console.error('Failed to copy:', err)
     }
+  }
+
+  // Demo function for viewing on blockchain explorer
+  const handleViewOnExplorer = (address: string) => {
+    const networkId = selectedNetwork?.id || 'sepolia'
+    const explorerUrls = {
+      sepolia: 'https://sepolia.etherscan.io/address/',
+      ethereum: 'https://etherscan.io/address/',
+      polygon: 'https://polygonscan.com/address/',
+      arbitrum: 'https://arbiscan.io/address/',
+      optimism: 'https://optimistic.etherscan.io/address/'
+    }
+    
+    const baseUrl = explorerUrls[networkId as keyof typeof explorerUrls] || explorerUrls.sepolia
+    const explorerUrl = `${baseUrl}${address}`
+    
+    console.log(`🔍 Demo: Opening explorer for ${address} on ${networkId}`)
+    console.log(`🌐 Explorer URL: ${explorerUrl}`)
+    
+    // For demo, show a notification
+    alert(`Demo: Would open blockchain explorer for address ${address.slice(0, 6)}...${address.slice(-4)} on ${selectedNetwork?.displayName || 'Sepolia'} network\n\nURL: ${explorerUrl}`)
+  }
+
+  // Demo function for showing QR code
+  const handleShowQRCode = (address: string) => {
+    const type = getAddressType()
+    console.log(`📱 Demo: Showing QR code for ${type} address: ${address}`)
+    
+    // For demo, show a notification
+    alert(`Demo: QR Code for ${type}\n\nNetwork: ${selectedNetwork?.displayName || 'Sepolia'}\nAddress: ${address}\n\nIn a real app, this would display a scannable QR code for easy mobile wallet transfers.`)
   }
 
   const formatAddress = (address: string) => {
@@ -335,11 +367,12 @@ export function EnhancedDepositModal({
                           onClick={() => copyToClipboard(getCurrentAddress(), getAddressType())}
                           className="h-10 w-10 p-0"
                         >
-                          <Copy className="h-4 w-4" />
+                          <Copy className={`h-4 w-4 ${copiedAddress === getAddressType() ? 'text-emerald-600' : ''}`} />
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
+                          onClick={() => handleShowQRCode(getCurrentAddress())}
                           className="h-10 w-10 p-0"
                         >
                           <QrCode className="h-4 w-4" />
@@ -429,7 +462,10 @@ export function EnhancedDepositModal({
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Close
             </Button>
-            <Button className="bg-emerald-600 hover:bg-emerald-700">
+            <Button 
+              className="bg-emerald-600 hover:bg-emerald-700"
+              onClick={() => handleViewOnExplorer(getCurrentAddress())}
+            >
               <ExternalLink className="w-4 h-4 mr-2" />
               View on Explorer
             </Button>

@@ -237,12 +237,7 @@ export default function TransactionsPage() {
                     </div>
                     <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'}>
                       {transaction.status}
-                      {transaction.fee && transaction.fee > 0 && (
-                        <span className="text-xs text-muted-foreground">
-                          Fee: {formatCurrency(transaction.fee)}
-                        </span>
-                      )}
-                    </div>
+                    </Badge>
                   </div>
                 </div>
               ))}
@@ -327,6 +322,31 @@ export default function TransactionsPage() {
                 )}
               </div>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Export Modal */}
+        <NotificationModal
+          open={showExportModal}
+          onOpenChange={setShowExportModal}
+          type="transaction"
+          title="Transaction Export Started"
+          message="Your transaction export has been initiated successfully"
+          details={[
+            `Total Transactions: ${filteredTransactions.length}`,
+            `Export Format: CSV with full transaction details`,
+            `Processing Time: 2-3 minutes`,
+            `Delivery Method: Email notification when ready`,
+            `File Size: Estimated ${Math.ceil(filteredTransactions.length / 100)}MB`
+          ]}
+          actionLabel="View Export History"
+          onAction={() => {
+            console.log('Demo: Would show export history')
+            setShowExportModal(false)
+          }}
+          showCopy={true}
+          copyText={`Transaction Export: ${filteredTransactions.length} transactions | ${new Date().toISOString()}`}
+        />
       </div>
     </AuthGuard>
   )

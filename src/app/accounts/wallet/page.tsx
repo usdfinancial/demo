@@ -21,7 +21,10 @@ import {
   Copy,
   Settings,
   Coins,
-  BarChart3
+  BarChart3,
+  QrCode,
+  AlertTriangle,
+  Smartphone
 } from 'lucide-react'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { useEnhancedAuth } from '@/components/providers/EnhancedAuthProvider'
@@ -116,6 +119,11 @@ export default function WalletPage() {
   const [userProfile, setUserProfile] = useState<any>(null)
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
   const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [showExplorerModal, setShowExplorerModal] = useState(false)
+  const [showQRModal, setShowQRModal] = useState(false)
+  const [explorerUrl, setExplorerUrl] = useState('')
+  const [qrAddress, setQrAddress] = useState('')
+  const [qrAddressType, setQrAddressType] = useState('')
 
   useEffect(() => {
     if (user?.email) {
@@ -174,24 +182,22 @@ export default function WalletPage() {
     }
     
     const baseUrl = explorerUrls[networkId as keyof typeof explorerUrls] || explorerUrls.sepolia
-    const explorerUrl = `${baseUrl}${address}`
+    const url = `${baseUrl}${address}`
     
     console.log(`🔍 Demo: Opening explorer for ${address} on ${networkId}`)
-    console.log(`🌐 Explorer URL: ${explorerUrl}`)
+    console.log(`🌐 Explorer URL: ${url}`)
     
-    // In a real app, this would open the URL
-    // window.open(explorerUrl, '_blank')
-    
-    // For demo, show a notification
-    alert(`Demo: Would open blockchain explorer for address ${address.slice(0, 6)}...${address.slice(-4)} on ${networkId} network`)
+    setExplorerUrl(url)
+    setShowExplorerModal(true)
   }
 
   // Demo function for showing QR code
   const handleShowQRCode = (address: string, type: string) => {
     console.log(`📱 Demo: Showing QR code for ${type} address: ${address}`)
     
-    // For demo, show a notification
-    alert(`Demo: QR Code for ${type}\n\nAddress: ${address}\n\nIn a real app, this would display a scannable QR code for easy mobile wallet transfers.`)
+    setQrAddress(address)
+    setQrAddressType(type)
+    setShowQRModal(true)
   }
 
   // Monitor authentication state changes
@@ -1301,6 +1307,150 @@ export default function WalletPage() {
                 className="w-full bg-emerald-600 hover:bg-emerald-700"
               >
                 Close Settings
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Explorer Modal */}
+      <Dialog open={showExplorerModal} onOpenChange={setShowExplorerModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Globe className="w-5 h-5 text-emerald-600" />
+              Blockchain Explorer
+            </DialogTitle>
+            <DialogDescription>
+              View wallet details on the blockchain
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-emerald-900">Sepolia Testnet</p>
+                  <p className="text-sm text-emerald-700">Blockchain Explorer</p>
+                </div>
+              </div>
+              <div className="bg-white rounded-lg p-3 border">
+                <p className="text-xs text-gray-500 mb-1">Wallet Address:</p>
+                <p className="font-mono text-sm break-all text-gray-900">
+                  {user?.walletAddress || user?.eoaAddress || 'No address available'}
+                </p>
+              </div>
+            </div>
+            
+            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium">Demo Mode</p>
+                  <p>In production, this would open the blockchain explorer to view transaction history, balance details, and smart contract interactions.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t space-y-2">
+              <Button 
+                onClick={() => {
+                  console.log(`🌐 Would open: ${explorerUrl}`)
+                  setShowExplorerModal(false)
+                }} 
+                className="w-full bg-emerald-600 hover:bg-emerald-700"
+              >
+                <Globe className="w-4 h-4 mr-2" />
+                Open Explorer (Demo)
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => setShowExplorerModal(false)} 
+                className="w-full"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* QR Code Modal */}
+      <Dialog open={showQRModal} onOpenChange={setShowQRModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <QrCode className="w-5 h-5 text-emerald-600" />
+              QR Code - {qrAddressType}
+            </DialogTitle>
+            <DialogDescription>
+              Scan with your mobile wallet to send funds
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="text-center">
+              <div className="w-48 h-48 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl mx-auto flex items-center justify-center border-2 border-emerald-200">
+                <div className="text-center">
+                  <QrCode className="w-16 h-16 text-emerald-600 mx-auto mb-3" />
+                  <p className="text-sm font-medium text-emerald-800">QR Code</p>
+                  <p className="text-xs text-emerald-600">Demo Placeholder</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="p-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${
+                    qrAddressType === 'Smart Wallet' ? 'bg-emerald-500' : 'bg-blue-500'
+                  }`}>
+                    {qrAddressType === 'Smart Wallet' ? 
+                      <Zap className="w-3 h-3 text-white" /> : 
+                      <Shield className="w-3 h-3 text-white" />
+                    }
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-emerald-900">{qrAddressType}</p>
+                    <p className="text-xs text-emerald-700">Sepolia Testnet</p>
+                  </div>
+                </div>
+                <div className="bg-white rounded-lg p-2 border">
+                  <p className="font-mono text-xs break-all text-gray-900">{qrAddress}</p>
+                </div>
+              </div>
+
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-start gap-2">
+                  <Smartphone className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-blue-800">
+                    <p className="font-medium">How to use:</p>
+                    <ul className="text-xs mt-1 space-y-1">
+                      <li>• Open your mobile wallet app</li>
+                      <li>• Scan this QR code</li>
+                      <li>• Enter amount and confirm transaction</li>
+                      <li>• Funds arrive in ~30 seconds</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t space-y-2">
+              <Button 
+                onClick={() => handleCopyAddress(qrAddress, qrAddressType)}
+                variant="outline"
+                className="w-full"
+              >
+                <Copy className="w-4 h-4 mr-2" />
+                Copy Address
+              </Button>
+              <Button 
+                onClick={() => setShowQRModal(false)} 
+                className="w-full bg-emerald-600 hover:bg-emerald-700"
+              >
+                Close
               </Button>
             </div>
           </div>

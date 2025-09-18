@@ -40,9 +40,9 @@ export default function TransactionsPage() {
 
   // Filter transactions
   const filteredTransactions = enhancedTransactions.filter(tx => {
-    const matchesSearch = tx.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         tx.recipient?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         tx.sender?.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch = tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         tx.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         tx.type.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesType = filterType === 'all' || tx.type === filterType
     const matchesStatus = filterStatus === 'all' || tx.status === filterStatus
     return matchesSearch && matchesType && matchesStatus
@@ -79,29 +79,22 @@ export default function TransactionsPage() {
   return (
     <AuthGuard>
       <div className="space-y-6">
+        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              Transaction History
+              Transactions
             </h1>
-            <p className="text-muted-foreground">Track and analyze your financial activity</p>
+            <p className="text-muted-foreground mt-1">View and manage your transaction history</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={handleExport}
-              className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setIsLoading(true)}
-              className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
-            >
+          <div className="flex items-center space-x-2">
+            <Button variant="outline" onClick={() => setIsLoading(true)}>
               <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
               Refresh
+            </Button>
+            <Button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-2" />
+              Export
             </Button>
           </div>
         </div>
@@ -116,10 +109,8 @@ export default function TransactionsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-emerald-600">
-                {totalTransactions}
-              </div>
-              <p className="text-sm text-muted-foreground">This month</p>
+              <div className="text-2xl font-bold text-emerald-600">{totalTransactions}</div>
+              <p className="text-sm text-muted-foreground">All time</p>
             </CardContent>
           </Card>
 
@@ -131,9 +122,7 @@ export default function TransactionsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-emerald-600">
-                {formatCurrency(totalVolume)}
-              </div>
+              <div className="text-2xl font-bold">{formatCurrency(totalVolume)}</div>
               <p className="text-sm text-muted-foreground">All transactions</p>
             </CardContent>
           </Card>
@@ -146,9 +135,7 @@ export default function TransactionsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {formatCurrency(totalIncoming)}
-              </div>
+              <div className="text-2xl font-bold text-green-600">{formatCurrency(totalIncoming)}</div>
               <p className="text-sm text-muted-foreground">Received</p>
             </CardContent>
           </Card>
@@ -161,56 +148,47 @@ export default function TransactionsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">
-                {formatCurrency(totalOutgoing)}
-              </div>
+              <div className="text-2xl font-bold text-red-600">{formatCurrency(totalOutgoing)}</div>
               <p className="text-sm text-muted-foreground">Sent</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Main Content */}
-        <Card className="border-emerald-200">
+        {/* Filters */}
+        <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-emerald-600" />
-                  Transaction History
-                </CardTitle>
-                <CardDescription>
-                  View and filter your transaction history
-                </CardDescription>
-              </div>
-            </div>
-            
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <CardTitle className="flex items-center gap-2">
+              <Search className="h-5 w-5 text-emerald-600" />
+              Filter Transactions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-4 md:flex-row md:items-center">
+              <div className="flex-1">
                 <Input
                   placeholder="Search transactions..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full"
                 />
               </div>
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-full sm:w-40">
-                  <SelectValue placeholder="Type" />
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filter by type" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="deposit">Deposits</SelectItem>
-                  <SelectItem value="payment">Payments</SelectItem>
-                  <SelectItem value="transfer">Transfers</SelectItem>
+                  <SelectItem value="deposit">Deposit</SelectItem>
+                  <SelectItem value="withdrawal">Withdrawal</SelectItem>
+                  <SelectItem value="transfer">Transfer</SelectItem>
+                  <SelectItem value="payment">Payment</SelectItem>
+                  <SelectItem value="exchange">Exchange</SelectItem>
                   <SelectItem value="yield">Yield</SelectItem>
-                  <SelectItem value="loan">Loans</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="w-full sm:w-40">
-                  <SelectValue placeholder="Status" />
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Status</SelectItem>
@@ -220,53 +198,45 @@ export default function TransactionsPage() {
                 </SelectContent>
               </Select>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Transactions List */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Transaction History</CardTitle>
+            <CardDescription>
+              {filteredTransactions.length} of {totalTransactions} transactions
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {filteredTransactions.map((transaction) => (
                 <div
                   key={transaction.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-emerald-50 transition-colors cursor-pointer"
-                  onClick={() => setSelectedTransaction(transaction)}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                  onClick={() => {
+                    setSelectedTransaction(transaction)
+                    setShowTransactionModal(true)
+                  }}
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
                       {getTransactionTypeIcon(transaction.type)}
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">{transaction.description}</p>
-                        {transaction.tags && transaction.tags.map(tag => (
-                          <Badge key={tag} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>{formatDate(transaction.timestamp)}</span>
-                        {transaction.chainId && (
-                          <span>• {getChainName(transaction.chainId)}</span>
-                        )}
-                        {transaction.recipient && (
-                          <span>• To: {transaction.recipient}</span>
-                        )}
+                    <div>
+                      <div className="font-medium">{transaction.description}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {formatDate(transaction.timestamp)} • {transaction.type}
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className={`font-semibold ${
-                      transaction.amount > 0 ? 'text-green-600' : 'text-slate-900'
-                    }`}>
-                      {transaction.amount > 0 ? '+' : ''}
-                      {formatCurrency(transaction.amount)}
+                    <div className={`font-semibold ${transaction.amount > 0 ? 'text-green-600' : 'text-slate-900'}`}>
+                      {transaction.amount > 0 ? '+' : ''}{formatCurrency(transaction.amount)}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant={transaction.status === 'completed' ? 'default' : 'secondary'}
-                        className="text-xs"
-                      >
-                        {transaction.status}
-                      </Badge>
+                    <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'}>
+                      {transaction.status}
                       {transaction.fee && transaction.fee > 0 && (
                         <span className="text-xs text-muted-foreground">
                           Fee: {formatCurrency(transaction.fee)}
@@ -354,116 +324,10 @@ export default function TransactionsPage() {
                       ))}
                     </div>
                   </div>
+                )}
+              </div>
             )}
-          </div>
-        </div>
       </div>
-    ))}
-  </div>
-</CardContent>
-</Card>
-
-{/* Transaction Detail Modal */}
-<Dialog open={!!selectedTransaction} onOpenChange={() => setSelectedTransaction(null)}>
-  <DialogContent className="max-w-2xl">
-    <DialogHeader>
-      <DialogTitle>Transaction Details</DialogTitle>
-      <DialogDescription>
-        Complete information about this transaction
-      </DialogDescription>
-    </DialogHeader>
-    {selectedTransaction && (
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Transaction ID</label>
-            <p className="font-mono text-sm">{selectedTransaction.id}</p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Type</label>
-            <p className="capitalize">{selectedTransaction.type}</p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Amount</label>
-            <p className={`font-semibold ${
-              selectedTransaction.amount > 0 ? 'text-green-600' : 'text-slate-900'
-            }`}>
-              {selectedTransaction.amount > 0 ? '+' : ''}
-              {formatCurrency(selectedTransaction.amount)}
-            </p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Status</label>
-            <Badge variant={selectedTransaction.status === 'completed' ? 'default' : 'secondary'}>
-              {selectedTransaction.status}
-            </Badge>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Date</label>
-            <p>{formatDate(selectedTransaction.timestamp)}</p>
-          </div>
-          {selectedTransaction.chainId && (
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Network</label>
-              <p>{getChainName(selectedTransaction.chainId)}</p>
-            </div>
-          )}
-        </div>
-        
-        <div>
-          <label className="text-sm font-medium text-muted-foreground">Description</label>
-          <p>{selectedTransaction.description}</p>
-        </div>
-        
-        {selectedTransaction.merchantInfo && (
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Merchant</label>
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="font-medium">{selectedTransaction.merchantInfo.name}</p>
-              <p className="text-sm text-muted-foreground">{selectedTransaction.merchantInfo.category}</p>
-              {selectedTransaction.merchantInfo.location && (
-                <p className="text-sm text-muted-foreground">{selectedTransaction.merchantInfo.location}</p>
-              )}
-            </div>
-          </div>
-        )}
-        
-        {selectedTransaction.tags && selectedTransaction.tags.length > 0 && (
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Tags</label>
-            <div className="flex gap-2 mt-1">
-              {selectedTransaction.tags.map(tag => (
-                <Badge key={tag} variant="secondary">{tag}</Badge>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    )}
-  </DialogContent>
-</Dialog>
-
-{/* Export Modal */}
-<NotificationModal
-  open={showExportModal}
-  onOpenChange={setShowExportModal}
-  type="transaction"
-  title="Transaction Export Started"
-  message="Your transaction export has been initiated successfully"
-  details={[
-    `Total Transactions: ${filteredTransactions.length}`,
-    `Export Format: CSV with full transaction details`,
-    `Processing Time: 2-3 minutes`,
-    `Delivery Method: Email notification when ready`,
-    `File Size: Estimated ${Math.ceil(filteredTransactions.length / 100)}MB`
-  ]}
-  actionLabel="View Export History"
-  onAction={() => {
-    console.log('Demo: Would show export history')
-    setShowExportModal(false)
-  }}
-  showCopy={true}
-  copyText={`Transaction Export: ${filteredTransactions.length} transactions | ${new Date().toISOString()}`}
-/>
-</AuthGuard>
-</AuthGuard>
+    </AuthGuard>
+  )
+}

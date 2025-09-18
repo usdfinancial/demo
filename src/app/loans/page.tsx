@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { useEnhancedAuth } from '@/components/providers/EnhancedAuthProvider'
 import { findUserByEmail } from '@/lib/demoUsers'
-import { DollarSign, TrendingUp, Shield, AlertTriangle, Calculator, Clock, Target, Plus, RefreshCw } from 'lucide-react'
+import { loanProducts, userLoans, formatCurrency, type LoanProduct, type UserLoan } from '@/lib/data'
+import { DollarSign, TrendingUp, Shield, AlertTriangle, Calculator, Clock, Target, Plus, RefreshCw, CheckCircle, XCircle, FileText, CreditCard, Banknote } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -12,53 +13,16 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 
-interface LoanProduct {
-  id: string
-  name: string
-  maxLTV: number
-  interestRate: number
-  minAmount: number
-  maxAmount: number
-  description: string
-  collateralTypes: string[]
+interface LoanApplication {
+  loanAmount: string
+  collateralAmount: string
+  selectedProduct: string
+  purpose: string
+  terms: boolean
 }
-
-interface UserLoan {
-  id: string
-  productName: string
-  principalAmount: number
-  outstandingBalance: number
-  interestRate: number
-  collateralValue: number
-  ltv: number
-  status: 'active' | 'pending' | 'completed'
-  nextPayment: string
-  monthlyPayment: number
-}
-
-const loanProducts: LoanProduct[] = [
-  {
-    id: '1',
-    name: 'Standard Crypto Loan',
-    maxLTV: 50,
-    interestRate: 8.5,
-    minAmount: 1000,
-    maxAmount: 100000,
-    description: 'Flexible crypto-collateralized loan with competitive rates',
-    collateralTypes: ['USDC', 'USDT', 'ETH', 'BTC']
-  },
-  {
-    id: '2',
-    name: 'Premium Loan',
-    maxLTV: 70,
-    interestRate: 6.2,
-    minAmount: 5000,
-    maxAmount: 500000,
-    description: 'Premium loan product for high-value borrowers',
-    collateralTypes: ['USDC', 'USDT', 'ETH', 'BTC', 'WBTC']
-  }
-]
 
 export default function LoansPage() {
   const { user } = useEnhancedAuth()
@@ -68,29 +32,6 @@ export default function LoansPage() {
   const [collateralAmount, setCollateralAmount] = useState('')
   const [collateralType, setCollateralType] = useState('USDC')
   const [isLoading, setIsLoading] = useState(false)
-
-  // Mock user loans data
-  const userLoans: UserLoan[] = [
-    {
-      id: '1',
-      productName: 'Standard Crypto Loan',
-      principalAmount: 25000,
-      outstandingBalance: 23500,
-      interestRate: 8.5,
-      collateralValue: 52000,
-      ltv: 45.2,
-      status: 'active',
-      nextPayment: '2024-02-15',
-      monthlyPayment: 850
-    }
-  ]
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount)
-  }
 
   const calculateLTV = () => {
     const loan = parseFloat(loanAmount) || 0
@@ -246,9 +187,6 @@ export default function LoansPage() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="USDC">USDC</SelectItem>
-                            <SelectItem value="USDT">USDT</SelectItem>
-                            <SelectItem value="ETH">ETH</SelectItem>
-                            <SelectItem value="BTC">BTC</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -343,7 +281,7 @@ export default function LoansPage() {
                         <div className="mt-2 p-3 bg-white border border-emerald-200 rounded-lg">
                           <div className="text-sm space-y-1">
                             <div>• Minimum collateral ratio: 150%</div>
-                            <div>• Supported assets: USDC, USDT, ETH, BTC</div>
+                            <div>• Supported assets: USDC</div>
                             <div>• Automatic liquidation protection</div>
                             <div>• Real-time collateral monitoring</div>
                           </div>

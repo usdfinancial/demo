@@ -47,7 +47,6 @@ const navigationItems = [
   {
     name: 'Exchange',
     icon: ArrowLeftRight,
-    comingSoon: true,
     subItems: [
       { name: 'Swap', href: '/swap', icon: ArrowLeftRight },
       { name: 'Earn Interest', href: '/exchange/earn', icon: TrendingUp },
@@ -58,7 +57,6 @@ const navigationItems = [
   {
     name: 'Invest',
     icon: TrendingUp,
-    comingSoon: true,
     subItems: [
       { name: 'Portfolio Overview', href: '/invest', icon: TrendingUp },
       { name: 'Tokenized Assets', href: '/invest/assets', icon: BarChart3 },
@@ -71,26 +69,22 @@ const navigationItems = [
   {
     name: 'Loans',
     href: '/loans',
-    icon: DollarSign,
-    comingSoon: true
+    icon: DollarSign
   },
   {
     name: 'Transactions',
     href: '/transactions',
-    icon: Receipt,
-    comingSoon: true
+    icon: Receipt
   },
   {
     name: 'Business',
     href: '/business',
-    icon: Building2,
-    comingSoon: true
+    icon: Building2
   },
   {
     name: 'Insurance',
     href: '/insurance',
-    icon: Shield,
-    comingSoon: true
+    icon: Shield
   }
 ]
 

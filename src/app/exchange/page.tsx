@@ -1,11 +1,11 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { TrendingUp, TrendingDown, ArrowLeftRight, RefreshCw, BarChart3, DollarSign, Timer, Globe, Zap, Shield, Activity } from 'lucide-react'
+import { TrendingUp, TrendingDown, ArrowLeftRight, RefreshCw, BarChart3, DollarSign, Timer, Globe, Zap, Shield, Activity, Percent, Target, CreditCard } from 'lucide-react'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { useEnhancedAuth } from '@/components/providers/EnhancedAuthProvider'
 import { findUserByEmail } from '@/lib/demoUsers'
-import { MockDataExtensions } from '@/lib/demo/mockDataExtensions'
+import { yieldPositions, formatCurrency, getStablecoinIcon, type StablecoinSymbol, type YieldPosition } from '@/lib/data'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -14,7 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
-import { getStablecoinIcon, StablecoinSymbol } from '@/lib/data'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 
 interface ExchangeRate {
   from: string
@@ -71,27 +72,11 @@ export default function ExchangePage() {
   const [fromCurrency, setFromCurrency] = useState('USDC')
   const [toCurrency, setToCurrency] = useState('USD')
   const [isLoading, setIsLoading] = useState(false)
-  const [userProfile, setUserProfile] = useState<any>(null)
-  const [defiPositions, setDefiPositions] = useState<any[]>([])
   const [isRefreshing, setIsRefreshing] = useState(false)
-
-  useEffect(() => {
-    if (user?.email) {
-      const demoUser = findUserByEmail(user.email)
-      if (demoUser) {
-        const defiData = MockDataExtensions.generateDeFiPositions(demoUser)
-        setDefiPositions(defiData.positions)
-        setUserProfile(demoUser)
-      }
-    }
-  }, [user?.email])
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount)
-  }
+  const [selectedTab, setSelectedTab] = useState('exchange')
+  const [isEarnModalOpen, setIsEarnModalOpen] = useState(false)
+  const [selectedProtocol, setSelectedProtocol] = useState('')
+  const [earnAmount, setEarnAmount] = useState('')
 
   const currentRate = exchangeRates.find(r => r.from === fromCurrency && r.to === toCurrency)?.rate || 1
   
@@ -163,9 +148,11 @@ export default function ExchangePage() {
               <CardDescription>Swap between USDC and USD</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <Tabs defaultValue="exchange" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+              <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="exchange">Exchange</TabsTrigger>
+                  <TabsTrigger value="earn">Earn</TabsTrigger>
+                  <TabsTrigger value="fiat">Fiat</TabsTrigger>
                   <TabsTrigger value="markets">Markets</TabsTrigger>
                 </TabsList>
                 
@@ -274,6 +261,184 @@ export default function ExchangePage() {
                         Exchange {fromAmount} {fromCurrency} for {toAmount} {toCurrency}
                       </Button>
                     )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="earn" className="mt-6">
+                  <div className="space-y-4">
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg font-semibold mb-2">Earn Yield on Your USDC</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Deposit your USDC into DeFi protocols to earn competitive yields
+                      </p>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {yieldPositions.map((position) => (
+                        <div key={position.id} className="p-4 border rounded-lg hover:bg-emerald-50 transition-colors">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                                <Percent className="h-5 w-5 text-emerald-600" />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold">{position.protocol}</h4>
+                                <p className="text-sm text-muted-foreground">{position.stablecoin}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-lg font-bold text-emerald-600">
+                                {position.apy.toFixed(2)}% APY
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {formatCurrency(position.currentValue)}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4 text-sm mb-3">
+                            <div>
+                              <div className="text-muted-foreground">Total Earned</div>
+                              <div className="font-medium text-green-600">
+                                {formatCurrency(position.currentValue * 0.1)}
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-muted-foreground">Chain</div>
+                              <div className="font-medium">{position.chainId === 1 ? 'Ethereum' : 'Polygon'}</div>
+                            </div>
+                          </div>
+
+                          <Button 
+                            size="sm" 
+                            className="w-full bg-emerald-500 hover:bg-emerald-600"
+                            onClick={() => {
+                              setSelectedProtocol(position.protocol)
+                              setIsEarnModalOpen(true)
+                            }}
+                          >
+                            Deposit to Earn
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <Shield className="h-5 w-5 text-emerald-600 mt-0.5" />
+                        <div>
+                          <h4 className="font-medium text-emerald-800 mb-1">Secure & Audited</h4>
+                          <p className="text-sm text-emerald-700">
+                            All protocols are thoroughly audited and battle-tested with billions in TVL
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="fiat" className="mt-6">
+                  <div className="space-y-4">
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg font-semibold mb-2">Fiat On/Off Ramps</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Convert between traditional currencies and USDC
+                      </p>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Card className="border-emerald-200">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-base flex items-center gap-2">
+                            <CreditCard className="h-4 w-4 text-emerald-600" />
+                            Buy USDC
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div>
+                            <Label className="text-sm font-medium">Amount (USD)</Label>
+                            <Input placeholder="1000" type="number" />
+                          </div>
+                          <div>
+                            <Label className="text-sm font-medium">Payment Method</Label>
+                            <Select defaultValue="card">
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="card">Credit/Debit Card</SelectItem>
+                                <SelectItem value="bank">Bank Transfer</SelectItem>
+                                <SelectItem value="wire">Wire Transfer</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Fee: 1.5% • You'll receive: ~998.5 USDC
+                          </div>
+                          <Button className="w-full bg-emerald-500 hover:bg-emerald-600">
+                            Buy USDC
+                          </Button>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="border-emerald-200">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-base flex items-center gap-2">
+                            <DollarSign className="h-4 w-4 text-emerald-600" />
+                            Sell USDC
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div>
+                            <Label className="text-sm font-medium">Amount (USDC)</Label>
+                            <Input placeholder="1000" type="number" />
+                          </div>
+                          <div>
+                            <Label className="text-sm font-medium">Withdrawal Method</Label>
+                            <Select defaultValue="bank">
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="bank">Bank Account</SelectItem>
+                                <SelectItem value="paypal">PayPal</SelectItem>
+                                <SelectItem value="wire">Wire Transfer</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Fee: 0.5% • You'll receive: ~$995.00
+                          </div>
+                          <Button variant="outline" className="w-full border-emerald-200 text-emerald-600 hover:bg-emerald-50">
+                            Sell USDC
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-3">
+                      <div className="flex items-center gap-3 p-3 border rounded-lg">
+                        <Timer className="h-5 w-5 text-emerald-600" />
+                        <div>
+                          <div className="text-sm font-medium">Instant Processing</div>
+                          <div className="text-xs text-muted-foreground">Card purchases in seconds</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-3 border rounded-lg">
+                        <Shield className="h-5 w-5 text-emerald-600" />
+                        <div>
+                          <div className="text-sm font-medium">Bank-Grade Security</div>
+                          <div className="text-xs text-muted-foreground">SOC 2 Type II certified</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-3 border rounded-lg">
+                        <Globe className="h-5 w-5 text-emerald-600" />
+                        <div>
+                          <div className="text-sm font-medium">Global Support</div>
+                          <div className="text-xs text-muted-foreground">180+ countries</div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </TabsContent>
 
@@ -388,6 +553,70 @@ export default function ExchangePage() {
             </Card>
           </div>
         </div>
+
+        {/* Earn Modal */}
+        <Dialog open={isEarnModalOpen} onOpenChange={setIsEarnModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Deposit to Earn Yield</DialogTitle>
+              <DialogDescription>
+                Deposit USDC to {selectedProtocol} and start earning yield
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium">Amount (USDC)</Label>
+                <Input 
+                  placeholder="1000" 
+                  type="number" 
+                  value={earnAmount}
+                  onChange={(e) => setEarnAmount(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Protocol</Label>
+                <Select value={selectedProtocol} onValueChange={setSelectedProtocol}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yieldPositions.map((position) => (
+                      <SelectItem key={position.id} value={position.protocol}>
+                        {position.protocol} - {position.apy.toFixed(2)}% APY
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {earnAmount && selectedProtocol && (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+                  <div className="text-sm space-y-1">
+                    <div className="flex justify-between">
+                      <span>Estimated Annual Earnings:</span>
+                      <span className="font-medium text-emerald-600">
+                        {formatCurrency(parseFloat(earnAmount) * 0.05)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Monthly Earnings:</span>
+                      <span className="font-medium">
+                        {formatCurrency(parseFloat(earnAmount) * 0.05 / 12)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsEarnModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button className="bg-emerald-600 hover:bg-emerald-700">
+                  Deposit & Earn
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </AuthGuard>
   )

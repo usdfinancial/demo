@@ -34,7 +34,7 @@ export default function InvestPage() {
   const [isAutoInvestModalOpen, setIsAutoInvestModalOpen] = useState(false)
 
   // Calculate portfolio summary from actual data
-  const totalInvested = userInvestmentPositions.reduce((sum, inv) => sum + (inv.quantity * inv.averageCost), 0)
+  const totalInvested = userInvestmentPositions.reduce((sum, inv) => sum + inv.investedAmount, 0)
   const totalCurrentValue = userInvestmentPositions.reduce((sum, inv) => sum + inv.currentValue, 0)
   const totalGainLoss = totalCurrentValue - totalInvested
   const totalGainLossPercentage = totalInvested > 0 ? (totalGainLoss / totalInvested) * 100 : 0
@@ -211,7 +211,7 @@ export default function InvestPage() {
                             <TrendingUp className="h-5 w-5 text-emerald-600" />
                           </div>
                           <div>
-                            <h3 className="font-semibold">{investment.assetName}</h3>
+                            <h3 className="font-semibold">{investment.assetSymbol}</h3>
                             <p className="text-sm text-muted-foreground">
                               {investment.quantity} shares
                             </p>
@@ -221,8 +221,8 @@ export default function InvestPage() {
                           <div className="text-lg font-bold">
                             {formatCurrency(investment.currentValue)}
                           </div>
-                          <div className={`text-sm ${investment.unrealizedPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {investment.unrealizedPnL >= 0 ? '+' : ''}{formatCurrency(investment.unrealizedPnL)}
+                          <div className={`text-sm ${investment.unrealizedPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {investment.unrealizedPnl >= 0 ? '+' : ''}{formatCurrency(investment.unrealizedPnl)}
                           </div>
                         </div>
                       </div>
@@ -230,16 +230,16 @@ export default function InvestPage() {
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
                           <div className="text-muted-foreground">Invested</div>
-                          <div className="font-medium">{formatCurrency(investment.quantity * investment.averageCost)}</div>
+                          <div className="font-medium">{formatCurrency(investment.investedAmount)}</div>
                         </div>
                         <div>
                           <div className="text-muted-foreground">Avg Price</div>
-                          <div className="font-medium">{formatCurrency(investment.averageCost)}</div>
+                          <div className="font-medium">{formatCurrency(investment.averagePrice)}</div>
                         </div>
                         <div>
                           <div className="text-muted-foreground">Return</div>
-                          <div className={`font-medium ${investment.unrealizedPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {((investment.unrealizedPnL / (investment.quantity * investment.averageCost)) * 100).toFixed(2)}%
+                          <div className={`font-medium ${investment.unrealizedPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {((investment.unrealizedPnl / investment.investedAmount) * 100).toFixed(2)}%
                           </div>
                         </div>
                       </div>
@@ -284,11 +284,11 @@ export default function InvestPage() {
                       <div className="grid grid-cols-2 gap-4 text-sm mb-4">
                         <div>
                           <div className="text-muted-foreground">Price</div>
-                          <div className="font-medium">{formatCurrency(asset.price)}</div>
+                          <div className="font-medium">{formatCurrency(asset.currentPrice)}</div>
                         </div>
                         <div>
                           <div className="text-muted-foreground">Expected APY</div>
-                          <div className="font-medium text-emerald-600">{asset.yield.toFixed(2)}%</div>
+                          <div className="font-medium text-emerald-600">{asset.expectedApy.toFixed(2)}%</div>
                         </div>
                       </div>
 
@@ -343,7 +343,7 @@ export default function InvestPage() {
                         </div>
                         <div>
                           <div className="text-muted-foreground">Next Investment</div>
-                          <div className="font-medium">Next: {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}</div>
+                          <div className="font-medium">{plan.nextInvestment}</div>
                         </div>
                       </div>
 
@@ -419,12 +419,12 @@ export default function InvestPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
-                        {userInvestmentPositions.slice(0, 4).map((investment) => {
+                        {userInvestmentPositions.slice(0, 4).map((investment, index) => {
                           const percentage = (investment.currentValue / portfolioSummary.totalCurrentValue) * 100
                           return (
                             <div key={investment.id} className="space-y-2">
                               <div className="flex justify-between text-sm">
-                                <span>{investment.assetName}</span>
+                                <span>{investment.assetSymbol}</span>
                                 <span>{percentage.toFixed(1)}%</span>
                               </div>
                               <Progress value={percentage} className="h-2" />

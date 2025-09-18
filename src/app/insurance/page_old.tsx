@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { useEnhancedAuth } from '@/components/providers/EnhancedAuthProvider'
+import { findUserByEmail } from '@/lib/demoUsers'
 import { insuranceProducts, userInsurancePolicies, formatCurrency, type InsuranceProduct, type UserInsurancePolicy } from '@/lib/data'
 import { Shield, TrendingUp, AlertTriangle, CheckCircle, Clock, DollarSign, RefreshCw, Plus, BarChart3, Activity, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,7 @@ import { Progress } from '@/components/ui/progress'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 
 interface InsuranceClaim {
   id: string
@@ -67,13 +69,13 @@ export default function InsurancePage() {
 
   const getProductIcon = (type: string) => {
     switch (type) {
-      case 'defi_protocol':
+      case 'defi':
         return <TrendingUp className="h-6 w-6 text-emerald-600" />
-      case 'smart_contract':
+      case 'smart-contract':
         return <Activity className="h-6 w-6 text-blue-600" />
-      case 'exchange':
+      case 'custody':
         return <Shield className="h-6 w-6 text-purple-600" />
-      case 'wallet':
+      case 'yield':
         return <BarChart3 className="h-6 w-6 text-orange-600" />
       default:
         return <Shield className="h-6 w-6 text-gray-600" />
@@ -93,10 +95,8 @@ export default function InsurancePage() {
     switch (status) {
       case 'active':
         return <Badge className="bg-green-100 text-green-800 border-green-200">Active</Badge>
-      case 'expired':
-        return <Badge className="bg-gray-100 text-gray-800 border-gray-200">Expired</Badge>
-      case 'claimed':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Claimed</Badge>
+      case 'available':
+        return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Available</Badge>
       case 'pending':
         return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Pending</Badge>
       case 'approved':
@@ -117,14 +117,6 @@ export default function InsurancePage() {
 
   const handlePurchase = (product: InsuranceProduct) => {
     alert(`Purchasing ${product.name} for ${formatCurrency(product.premium)}`)
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    })
   }
 
   if (!user) {
@@ -161,12 +153,9 @@ export default function InsurancePage() {
               <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            <Button 
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-              onClick={() => setIsClaimModalOpen(true)}
-            >
+            <Button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600">
               <Plus className="h-4 w-4 mr-2" />
-              File Claim
+              New Policy
             </Button>
           </div>
         </div>
@@ -273,7 +262,7 @@ export default function InsurancePage() {
                             <p className="text-sm text-muted-foreground">{product.description}</p>
                           </div>
                         </div>
-                        <Badge className="bg-blue-100 text-blue-800 border-blue-200">Available</Badge>
+                        {getStatusBadge(product.status)}
                       </div>
 
                       <div className="space-y-3">
@@ -284,11 +273,11 @@ export default function InsurancePage() {
                           </div>
                           <div>
                             <span className="text-muted-foreground">Premium:</span>
-                            <div className="font-medium">{product.premium}% annually</div>
+                            <div className="font-medium">{formatCurrency(product.premium)}</div>
                           </div>
                           <div>
-                            <span className="text-muted-foreground">Min Amount:</span>
-                            <div className="font-medium">{formatCurrency(product.minAmount)}</div>
+                            <span className="text-muted-foreground">Duration:</span>
+                            <div className="font-medium">{product.duration}</div>
                           </div>
                           <div>
                             <span className="text-muted-foreground">Risk Level:</span>
@@ -312,8 +301,9 @@ export default function InsurancePage() {
                         <Button 
                           className="w-full bg-emerald-500 hover:bg-emerald-600"
                           onClick={() => handlePurchase(product)}
+                          disabled={product.status === 'active'}
                         >
-                          Purchase Policy
+                          {product.status === 'active' ? 'Already Active' : 'Purchase Policy'}
                         </Button>
                       </div>
                     </div>
@@ -323,15 +313,15 @@ export default function InsurancePage() {
 
               <TabsContent value="policies" className="space-y-6 mt-6">
                 <div className="space-y-4">
-                  {userInsurancePolicies.map((policy) => (
+                  {insuranceProducts.filter(p => p.status === 'active').map((policy) => (
                     <div key={policy.id} className="p-4 border rounded-lg hover:bg-emerald-50 transition-colors">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <Shield className="h-6 w-6 text-emerald-600" />
+                          {getProductIcon(policy.type)}
                           <div>
-                            <h3 className="font-semibold">{policy.productName}</h3>
+                            <h3 className="font-semibold">{policy.name}</h3>
                             <p className="text-sm text-muted-foreground">
-                              Coverage: {formatCurrency(policy.coverageAmount)}
+                              Coverage: {formatCurrency(policy.coverage)}
                             </p>
                           </div>
                         </div>
@@ -340,27 +330,18 @@ export default function InsurancePage() {
                       
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
-                          <div className="text-muted-foreground">Premium Paid</div>
-                          <div className="font-medium">{formatCurrency(policy.premiumPaid)}</div>
+                          <div className="text-muted-foreground">Annual Premium</div>
+                          <div className="font-medium">{formatCurrency(policy.premium)}</div>
                         </div>
                         <div>
-                          <div className="text-muted-foreground">Start Date</div>
-                          <div className="font-medium">{formatDate(policy.startDate)}</div>
+                          <div className="text-muted-foreground">Duration</div>
+                          <div className="font-medium">{policy.duration}</div>
                         </div>
                         <div>
-                          <div className="text-muted-foreground">End Date</div>
-                          <div className="font-medium">{formatDate(policy.endDate)}</div>
-                        </div>
-                      </div>
-
-                      <div className="mt-4">
-                        <div className="text-sm text-muted-foreground mb-2">Protected Assets</div>
-                        <div className="flex flex-wrap gap-1">
-                          {policy.protectedAssets.map((asset, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {asset}
-                            </Badge>
-                          ))}
+                          <div className="text-muted-foreground">Risk Level</div>
+                          <Badge className={`text-xs ${getRiskColor(policy.riskLevel)}`}>
+                            {policy.riskLevel}
+                          </Badge>
                         </div>
                       </div>
 
@@ -368,7 +349,7 @@ export default function InsurancePage() {
                         <Button size="sm" variant="outline">
                           View Details
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => setIsClaimModalOpen(true)}>
+                        <Button size="sm" variant="outline">
                           File Claim
                         </Button>
                         <Button size="sm" variant="outline">
@@ -378,7 +359,7 @@ export default function InsurancePage() {
                     </div>
                   ))}
 
-                  {userInsurancePolicies.length === 0 && (
+                  {insuranceProducts.filter(p => p.status === 'active').length === 0 && (
                     <div className="text-center py-8">
                       <Shield className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                       <h3 className="text-lg font-semibold mb-2">No Active Policies</h3>
@@ -393,7 +374,7 @@ export default function InsurancePage() {
 
               <TabsContent value="claims" className="space-y-6 mt-6">
                 <div className="space-y-4">
-                  {mockClaims.map((claim) => (
+                  {claims.map((claim) => (
                     <div key={claim.id} className="p-4 border rounded-lg hover:bg-emerald-50 transition-colors">
                       <div className="flex items-center justify-between mb-3">
                         <div>
@@ -410,7 +391,7 @@ export default function InsurancePage() {
                         </div>
                         <div>
                           <div className="text-muted-foreground">Date Submitted</div>
-                          <div className="font-medium">{formatDate(claim.dateSubmitted)}</div>
+                          <div className="font-medium">{claim.dateSubmitted}</div>
                         </div>
                         <div>
                           <div className="text-muted-foreground">Claim ID</div>
@@ -420,7 +401,7 @@ export default function InsurancePage() {
                     </div>
                   ))}
 
-                  {mockClaims.length === 0 && (
+                  {claims.length === 0 && (
                     <div className="text-center py-8">
                       <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                       <h3 className="text-lg font-semibold mb-2">No Claims History</h3>
@@ -471,46 +452,6 @@ export default function InsurancePage() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Claim Filing Modal */}
-        <Dialog open={isClaimModalOpen} onOpenChange={setIsClaimModalOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>File Insurance Claim</DialogTitle>
-              <DialogDescription>
-                Submit a claim for your insurance policy
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label className="text-sm font-medium">Policy</Label>
-                <select className="w-full p-2 border rounded-md">
-                  {userInsurancePolicies.map((policy) => (
-                    <option key={policy.id} value={policy.id}>
-                      {policy.productName} - {formatCurrency(policy.coverageAmount)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Claim Amount</Label>
-                <Input placeholder="Enter claim amount" type="number" />
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Description</Label>
-                <Input placeholder="Describe the incident..." />
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsClaimModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button className="bg-emerald-600 hover:bg-emerald-700">
-                  Submit Claim
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
     </AuthGuard>
   )

@@ -79,10 +79,10 @@ export default function AbstractPage() {
       loading
     },
     environmentVars: {
-      hasAlchemyKey: !!process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
-      alchemyKeyPrefix: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY?.slice(0, 8) + '...',
-      hasPolicyId: !!process.env.NEXT_PUBLIC_ALCHEMY_POLICY_ID,
-      hasAlchemyAccountKit: !!process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
+      hasAlchemyKey: true, // Demo mode - simulated as available
+      alchemyKeyPrefix: 'demo_key...',
+      hasPolicyId: true, // Demo mode - simulated as available
+      hasAlchemyAccountKit: true // Demo mode - simulated as available
     },
     contextComparison: {
       authContext: {
@@ -134,7 +134,7 @@ export default function AbstractPage() {
       id: 'sepolia',
       name: 'Ethereum Sepolia',
       chainId: '0xaa36a7',
-      rpcUrl: `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+      rpcUrl: 'https://eth-sepolia.g.alchemy.com/v2/demo_key',
       blockExplorer: 'https://sepolia.etherscan.io',
       icon: '🔧',
       color: 'bg-blue-100 text-blue-800',
@@ -144,7 +144,7 @@ export default function AbstractPage() {
       id: 'mainnet',
       name: 'Ethereum Mainnet',
       chainId: '0x1',
-      rpcUrl: `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+      rpcUrl: 'https://eth-mainnet.g.alchemy.com/v2/demo_key',
       blockExplorer: 'https://etherscan.io',
       icon: '💎',
       color: 'bg-emerald-100 text-emerald-800',
@@ -178,126 +178,58 @@ export default function AbstractPage() {
     }
   }
 
-  // Comprehensive blockchain connection test
+  // Demo blockchain connection test (simulated)
   const testAlchemyConnection = async () => {
-    const apiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
-    if (!apiKey) {
-      setAlchemyStatus({ connected: false, error: 'No API key found' })
-      return
-    }
-
-    try {
-      const response = await fetch(`https://eth-sepolia.g.alchemy.com/v2/${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'eth_blockNumber',
-          params: [],
-          id: 1
-        })
-      })
-      
-      const data = await response.json()
-      const blockNumber = parseInt(data.result, 16)
-      
-      setAlchemyStatus({
-        connected: true,
-        latestBlock: blockNumber,
-        rpcUrl: `https://eth-sepolia.g.alchemy.com/v2/${apiKey.slice(0, 8)}...`,
-        responseTime: Date.now()
-      })
-    } catch (error) {
-      setAlchemyStatus({ connected: false, error: error.message })
-    }
+    // Simulate connection test for demo mode
+    setAlchemyStatus({
+      connected: true,
+      latestBlock: 4567890,
+      rpcUrl: 'https://eth-sepolia.g.alchemy.com/v2/demo_key...',
+      responseTime: Date.now()
+    })
   }
 
   const getBlockchainInfo = async () => {
-    const apiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
-    if (!apiKey) return
-
-    try {
-      const response = await fetch(`https://eth-sepolia.g.alchemy.com/v2/${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'eth_getBlockByNumber',
-          params: ['latest', false],
-          id: 1
-        })
-      })
-      
-      const data = await response.json()
-      setBlockchainInfo(data.result)
-    } catch (error) {
-      console.error('Failed to get blockchain info:', error)
-    }
+    // Simulate blockchain info for demo mode
+    setBlockchainInfo({
+      number: '0x45D4EA',
+      hash: '0x1234567890abcdef...',
+      timestamp: '0x' + Math.floor(Date.now() / 1000).toString(16),
+      gasLimit: '0x1C9C380',
+      gasUsed: '0x5208'
+    })
   }
 
   const getTokenBalances = async (address: string) => {
-    const apiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
-    if (!apiKey || !address) return
-
-    try {
-      const response = await fetch(`https://eth-sepolia.g.alchemy.com/v2/${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'alchemy_getTokenBalances',
-          params: [address],
-          id: 1
-        })
-      })
-      
-      const data = await response.json()
-      if (data.result?.tokenBalances) {
-        setTokenBalances(data.result.tokenBalances)
+    if (!address) return
+    
+    // Simulate token balances for demo mode
+    setTokenBalances([
+      {
+        contractAddress: '0xf08a50178dfcde18524640ea6618a1f965821715',
+        tokenBalance: '0x' + (2500 * 1e6).toString(16), // 2500 USDC
+        symbol: 'USDC',
+        decimals: 6
+      },
+      {
+        contractAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+        tokenBalance: '0x' + (1000 * 1e6).toString(16), // 1000 USDC
+        symbol: 'USDC',
+        decimals: 6
       }
-    } catch (error) {
-      console.error('Failed to get token balances:', error)
-    }
+    ])
   }
 
   const testConnectionStatus = async () => {
-    const apiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
-    if (!apiKey) return
-
     const testAddress = smartWalletAddress || eoaAddress || '0x98cDb60Dff9D36340caed6081AD237CD949c8552'
     
-    try {
-      const [ethBalance, networkId] = await Promise.all([
-        fetch(`https://eth-sepolia.g.alchemy.com/v2/${apiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            jsonrpc: '2.0',
-            method: 'eth_getBalance',
-            params: [testAddress, 'latest'],
-            id: 1
-          })
-        }).then(r => r.json()),
-        fetch(`https://eth-sepolia.g.alchemy.com/v2/${apiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            jsonrpc: '2.0',
-            method: 'net_version',
-            params: [],
-            id: 1
-          })
-        }).then(r => r.json())
-      ])
-
-      setConnectionStatus({
-        ethBalance: ethBalance.result,
-        networkId: networkId.result,
-        testAddress: testAddress,
-        timestamp: new Date().toISOString()
-      })
-    } catch (error) {
-      setConnectionStatus({ error: error.message })
+    // Simulate connection status for demo mode
+    setConnectionStatus({
+      ethBalance: '0x' + (0.1 * 1e18).toString(16), // 0.1 ETH
+      networkId: '11155111', // Sepolia network ID
+      testAddress: testAddress,
+      timestamp: new Date().toISOString()
+    })
     }
   }
 

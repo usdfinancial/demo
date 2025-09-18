@@ -380,7 +380,7 @@ export const protocolsData: ProtocolInfo[] = [
     tvl: 4100000000,
     risk: 'Low',
     description: 'Efficient stablecoin trading with minimal slippage',
-    supportedStablecoins: ['USDC', 'USDT', 'USDC', 'USDT'],
+    supportedStablecoins: ['USDC'],
     chainIds: [1, 137, 42161],
     logoUrl: '/logos/curve.svg'
   }
@@ -412,10 +412,6 @@ export const stablecoinChartConfig = {
     label: 'USDC',
     color: 'hsl(220, 70%, 50%)', // Blue
   },
-  'USDT': {
-    label: 'USDT',
-    color: 'hsl(142, 70%, 45%)', // Green
-  }
 };
 
 // Cross-chain bridge options
@@ -431,11 +427,11 @@ export const bridgeOptions: CrossChainBridge[] = [
     isActive: true
   },
   {
-    id: 'usdt-eth-arbitrum',
-    name: 'USDT: Ethereum → Arbitrum',
+    id: 'usdc-eth-arbitrum',
+    name: 'USDC: Ethereum → Arbitrum',
     fromChain: 1,
     toChain: 42161,
-    stablecoin: 'USDT',
+    stablecoin: 'USDC',
     estimatedTime: '2-5 minutes',
     fees: 1.80,
     isActive: true

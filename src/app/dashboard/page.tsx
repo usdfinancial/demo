@@ -810,7 +810,7 @@ export default function Dashboard() {
                   Purpose-built for stablecoin transactions with optimized fees, instant settlements, and seamless DeFi integration.
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500">USDC • USDT • DAI</span>
+                  <span className="text-xs text-slate-500">USDC • Multi-Chain</span>
                   <Badge className="bg-violet-100 text-violet-800 text-xs">Optimized</Badge>
                 </div>
               </CardContent>
@@ -1003,13 +1003,13 @@ export default function Dashboard() {
                   <div className="flex items-center gap-3">
                     <Banknote className="h-5 w-5 text-green-600" />
                     <div>
-                      <p className="font-medium text-sm">USDT Market Cap</p>
-                      <p className="text-xs text-green-700">Tether USD</p>
+                      <p className="font-medium text-sm">USDC Trading Volume</p>
+                      <p className="text-xs text-green-700">24h Volume</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-green-900">$118.2B</p>
-                    <p className="text-xs text-green-600">+0.05%</p>
+                    <p className="font-bold text-green-900">$4.8B</p>
+                    <p className="text-xs text-green-600">+2.1%</p>
                   </div>
                 </div>
 
@@ -1024,7 +1024,7 @@ export default function Dashboard() {
                       <span className="font-semibold text-purple-900">8.5% APY</span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-purple-700">Aave USDT</span>
+                      <span className="text-purple-700">Yearn USDC</span>
                       <span className="font-semibold text-purple-900">7.2% APY</span>
                     </div>
                   </div>

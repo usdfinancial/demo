@@ -22,7 +22,7 @@ interface StablecoinPair {
 export default function SwapPage() {
   const [fromAmount, setFromAmount] = useState('1000')
   const [fromToken, setFromToken] = useState<StablecoinSymbol>('USDC')
-  const [toToken, setToToken] = useState<StablecoinSymbol>('USDT')
+  const [toToken, setToToken] = useState<StablecoinSymbol>('USDC')
   const [isSwapping, setIsSwapping] = useState(false)
   const [selectedChain, setSelectedChain] = useState(1) // Ethereum mainnet
 
@@ -35,8 +35,7 @@ export default function SwapPage() {
   const getPriceImpact = () => 0.02
 
   const stablecoinPairs: StablecoinPair[] = [
-    { from: 'USDC', to: 'USDT', rate: 0.9998, change: '+0.02%', trend: 'up', liquidity: 50000000, fee: 0.01 },
-    { from: 'USDT', to: 'USDC', rate: 1.0002, change: '-0.01%', trend: 'down', liquidity: 48000000, fee: 0.01 }
+    { from: 'USDC', to: 'USDC', rate: 1.0000, change: '0.00%', trend: 'up', liquidity: 50000000, fee: 0.01 }
   ]
 
   const recentSwaps = mockStablecoinTransactions
@@ -135,7 +134,6 @@ export default function SwapPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="USDC">USDC</SelectItem>
-                        <SelectItem value="USDT">USDT</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -177,7 +175,6 @@ export default function SwapPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="USDC">USDC</SelectItem>
-                        <SelectItem value="USDT">USDT</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

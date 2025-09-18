@@ -6,8 +6,8 @@
 -- ENUMS AND CUSTOM TYPES
 -- ============================================================================
 
--- Supported stablecoins (USDC and USDT only)
-CREATE TYPE stablecoin_symbol AS ENUM ('USDC', 'USDT');
+-- Supported stablecoins (USDC only for demo)
+CREATE TYPE stablecoin_symbol AS ENUM ('USDC');
 
 -- Supported blockchain networks
 CREATE TYPE chain_id AS ENUM ('1', '137', '42161', '10', '56'); -- Ethereum, Polygon, Arbitrum, Optimism, BSC
@@ -751,7 +751,7 @@ INSERT INTO system_settings (key, value, description) VALUES
 ('maintenance_mode', 'false', 'Enable/disable maintenance mode'),
 ('max_daily_withdrawal', '50000', 'Maximum daily withdrawal limit in USD'),
 ('default_transaction_fee', '0.001', 'Default transaction fee percentage'),
-('supported_stablecoins', '["USDC", "USDT"]', 'List of supported stablecoins'),
+('supported_stablecoins', '["USDC"]', 'List of supported stablecoins'),
 ('kyc_required_amount', '10000', 'Amount threshold requiring KYC verification');
 
 -- ============================================================================
@@ -841,7 +841,7 @@ This database schema is designed for USD Financial - a comprehensive stablecoin-
 financial platform. Key features:
 
 1. **Multi-chain Support**: Supports 5 major blockchain networks
-2. **Stablecoin Focus**: Designed specifically for USDC and USDT
+2. **Stablecoin Focus**: Designed specifically for USDC
 3. **DeFi Integration**: Native support for yield farming protocols
 4. **Investment Management**: Tokenized assets and auto-invest features
 5. **Card System**: Physical and virtual debit cards

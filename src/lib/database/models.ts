@@ -1,6 +1,6 @@
 // Database model type definitions for USD Financial
 
-export type StablecoinSymbol = 'USDC' | 'USDT'
+export type StablecoinSymbol = 'USDC'
 export type ChainId = '1' | '137' | '42161' | '10' | '56'
 export type TransactionType = 'deposit' | 'withdrawal' | 'yield' | 'swap' | 'bridge' | 'spend' | 'transfer' | 'reward' | 'fee' | 'investment' | 'loan' | 'insurance'
 export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'cancelled'

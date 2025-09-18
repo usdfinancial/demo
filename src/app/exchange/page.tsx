@@ -37,34 +37,18 @@ interface MarketData {
 const exchangeRates: ExchangeRate[] = [
   {
     from: 'USDC',
-    to: 'USDT',
-    rate: 0.9998,
-    change24h: 0.001,
-    volume24h: 125000000,
-    lastUpdated: '2 seconds ago'
-  },
-  {
-    from: 'USDT',
-    to: 'USDC',
-    rate: 1.0002,
-    change24h: -0.001,
-    volume24h: 98000000,
-    lastUpdated: '2 seconds ago'
-  },
-  {
-    from: 'USDC',
     to: 'USD',
     rate: 1.0001,
     change24h: 0.0005,
-    volume24h: 45000000,
+    volume24h: 89000000,
     lastUpdated: '5 seconds ago'
   },
   {
-    from: 'USDT',
-    to: 'USD',
+    from: 'USD',
+    to: 'USDC',
     rate: 0.9999,
     change24h: -0.0003,
-    volume24h: 52000000,
+    volume24h: 156000000,
     lastUpdated: '3 seconds ago'
   }
 ]
@@ -75,16 +59,8 @@ const marketData: MarketData[] = [
     price: 1.0001,
     change24h: 0.0005,
     volume24h: 2500000000,
-    marketCap: 32000000000,
-    stability: 99.8
-  },
-  {
-    symbol: 'USDT',
-    price: 0.9999,
-    change24h: -0.0003,
-    volume24h: 4200000000,
-    marketCap: 83000000000,
-    stability: 99.7
+    marketCap: 32800000000,
+    stability: 99.9
   }
 ]
 
@@ -93,7 +69,7 @@ export default function ExchangePage() {
   const [fromAmount, setFromAmount] = useState('')
   const [toAmount, setToAmount] = useState('')
   const [fromCurrency, setFromCurrency] = useState('USDC')
-  const [toCurrency, setToCurrency] = useState('USDT')
+  const [toCurrency, setToCurrency] = useState('USD')
   const [isLoading, setIsLoading] = useState(false)
   const [userProfile, setUserProfile] = useState<any>(null)
   const [defiPositions, setDefiPositions] = useState<any[]>([])
@@ -184,7 +160,7 @@ export default function ExchangePage() {
           <Card className="border-emerald-200 md:col-span-3">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Exchange Stablecoins</CardTitle>
-              <CardDescription>Swap between USDC, USDT, and USD</CardDescription>
+              <CardDescription>Swap between USDC and USD</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <Tabs defaultValue="exchange" className="w-full">
@@ -213,11 +189,6 @@ export default function ExchangePage() {
                             <SelectItem value="USDC">
                               <div className="flex items-center gap-2">
                                 {getStablecoinIcon('USDC')} USDC
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="USDT">
-                              <div className="flex items-center gap-2">
-                                {getStablecoinIcon('USDC')} USDT
                               </div>
                             </SelectItem>
                             <SelectItem value="USD">
@@ -258,11 +229,6 @@ export default function ExchangePage() {
                             <SelectItem value="USDC">
                               <div className="flex items-center gap-2">
                                 {getStablecoinIcon('USDC')} USDC
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="USDT">
-                              <div className="flex items-center gap-2">
-                                {getStablecoinIcon('USDC')} USDT
                               </div>
                             </SelectItem>
                             <SelectItem value="USD">
@@ -413,16 +379,10 @@ export default function ExchangePage() {
               </CardHeader>
               <CardContent className="space-y-2">
                 <Button variant="outline" className="w-full justify-start text-sm">
-                  USDC → USDT
-                </Button>
-                <Button variant="outline" className="w-full justify-start text-sm">
-                  USDT → USDC
+                  USDC → USD
                 </Button>
                 <Button variant="outline" className="w-full justify-start text-sm">
                   USD → USDC
-                </Button>
-                <Button variant="outline" className="w-full justify-start text-sm">
-                  USD → USDT
                 </Button>
               </CardContent>
             </Card>

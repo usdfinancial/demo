@@ -1059,7 +1059,7 @@ export default function Dashboard() {
                   </Button>
                 </Link>
                 <Link href="/accounts/bridge">
-                  <Button variant="outline" className="border-white text-white hover:bg-white hover:text-emerald-600 font-semibold">
+                  <Button variant="outline" className="border-white text-white bg-transparent hover:bg-white hover:text-emerald-600 font-semibold backdrop-blur-sm">
                     <Zap className="h-4 w-4 mr-2" />
                     Bridge Assets
                   </Button>

@@ -230,7 +230,6 @@ export default function AbstractPage() {
       testAddress: testAddress,
       timestamp: new Date().toISOString()
     })
-    }
   }
 
   const refreshBalances = async () => {
@@ -382,7 +381,7 @@ export default function AbstractPage() {
             </p>
             
             <Button
-              onClick={signIn}
+              onClick={() => login()}
               className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
             >
               Connect Wallet

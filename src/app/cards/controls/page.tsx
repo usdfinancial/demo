@@ -83,7 +83,7 @@ const userCards: CardControl[] = [
     type: 'virtual',
     status: 'active',
     balance: 500.00,
-    currency: 'USDC',
+    currency: 'USDT',
     limits: {
       daily: 1000,
       monthly: 5000,
@@ -116,9 +116,7 @@ export default function CardControlsPage() {
   const [notifications, setNotifications] = useState(selectedCard.notifications)
   const [isUpdating, setIsUpdating] = useState(false)
   const [showSecurityModal, setShowSecurityModal] = useState(false)
-  const [securityAction, setSecurityAction] = useState<'report' | 'travel' | 'security' | null>(null)
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
-  const [upgradeType, setUpgradeType] = useState<'limits' | 'restrictions' | 'notifications' | null>(null)
+  const [securityAction, setSecurityAction] = useState<'report' | 'travel' | null>(null)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -215,16 +213,6 @@ export default function CardControlsPage() {
     }
   }
 
-  const handleUpgrade = (type: 'limits' | 'restrictions' | 'notifications') => {
-    setUpgradeType(type)
-    setShowUpgradeModal(true)
-  }
-
-  const handleSecuritySettings = () => {
-    setSecurityAction('security')
-    setShowSecurityModal(true)
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -235,11 +223,7 @@ export default function CardControlsPage() {
           <p className="text-muted-foreground mt-1">Manage your card settings, limits, and security preferences</p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button 
-            variant="outline" 
-            className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
-            onClick={handleSecuritySettings}
-          >
+          <Button variant="outline" className="border-emerald-200 text-emerald-600 hover:bg-emerald-50">
             <Shield className="h-4 w-4 mr-2" />
             Security Settings
           </Button>
@@ -391,22 +375,13 @@ export default function CardControlsPage() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
-                      <Button 
-                        className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-                        onClick={updateLimits}
-                        disabled={isUpdating}
-                      >
-                        {isUpdating ? 'Updating...' : 'Update Spending Limits'}
-                      </Button>
-                      <Button 
-                        variant="outline"
-                        className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
-                        onClick={() => handleUpgrade('limits')}
-                      >
-                        Upgrade
-                      </Button>
-                    </div>
+                    <Button 
+                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
+                      onClick={updateLimits}
+                      disabled={isUpdating}
+                    >
+                      {isUpdating ? 'Updating...' : 'Update Spending Limits'}
+                    </Button>
                   </div>
                 </TabsContent>
 
@@ -500,22 +475,13 @@ export default function CardControlsPage() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
-                      <Button 
-                        className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-                        onClick={updateCardRestrictions}
-                        disabled={isUpdating}
-                      >
-                        {isUpdating ? 'Updating...' : 'Update Restrictions'}
-                      </Button>
-                      <Button 
-                        variant="outline"
-                        className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
-                        onClick={() => handleUpgrade('restrictions')}
-                      >
-                        Upgrade
-                      </Button>
-                    </div>
+                    <Button 
+                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
+                      onClick={updateCardRestrictions}
+                      disabled={isUpdating}
+                    >
+                      {isUpdating ? 'Updating...' : 'Update Restrictions'}
+                    </Button>
                   </div>
                 </TabsContent>
 
@@ -577,22 +543,13 @@ export default function CardControlsPage() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
-                      <Button 
-                        className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-                        onClick={updateCardNotifications}
-                        disabled={isUpdating}
-                      >
-                        {isUpdating ? 'Updating...' : 'Update Notification Settings'}
-                      </Button>
-                      <Button 
-                        variant="outline"
-                        className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
-                        onClick={() => handleUpgrade('notifications')}
-                      >
-                        Upgrade
-                      </Button>
-                    </div>
+                    <Button 
+                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
+                      onClick={updateCardNotifications}
+                      disabled={isUpdating}
+                    >
+                      {isUpdating ? 'Updating...' : 'Update Notification Settings'}
+                    </Button>
                   </div>
                 </TabsContent>
               </Tabs>
@@ -759,114 +716,28 @@ export default function CardControlsPage() {
         open={showSecurityModal}
         onOpenChange={setShowSecurityModal}
         type="card"
-        title={
-          securityAction === 'report' ? 'Card Security Alert' :
-          securityAction === 'travel' ? 'Travel Notice Activated' :
-          'Security Settings Updated'
+        title={securityAction === 'report' ? 'Card Security Alert' : 'Travel Notice Activated'}
+        message={securityAction === 'report' 
+          ? 'Your card has been immediately secured and fraud protection activated'
+          : 'Travel notice has been set up successfully for international transactions'
         }
-        message={
-          securityAction === 'report' 
-            ? 'Your card has been immediately secured and fraud protection activated'
-            : securityAction === 'travel'
-            ? 'Travel notice has been set up successfully for international transactions'
-            : 'Your card security settings have been successfully configured'
-        }
-        details={
-          securityAction === 'report' ? [
-            `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
-            'Status: Immediately locked for security',
-            'Fraud Protection: Activated',
-            'Replacement Card: 1-2 business days',
-            'USDC Balance: Secure and accessible',
-            'Zero Liability: Full protection against fraud'
-          ] : securityAction === 'travel' ? [
-            `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
-            'International Transactions: Enabled',
-            'Travel Alerts: Activated',
-            'Foreign Exchange: No fees with USDC',
-            'Security Monitoring: Enhanced for travel',
-            'Support: 24/7 available while traveling'
-          ] : [
-            `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
-            'Security Features: All systems active',
-            'Fraud Monitoring: 24/7 protection enabled',
-            'PIN Security: Enhanced encryption',
-            'Transaction Alerts: Real-time notifications',
-            'Biometric Auth: Fingerprint & face recognition',
-            'Zero Liability: Complete fraud protection'
-          ]
-        }
-        actionLabel={
-          securityAction === 'report' ? 'Order Replacement' :
-          securityAction === 'travel' ? 'View Travel Tips' :
-          'View Security Dashboard'
-        }
-        onAction={() => {
-          setShowSecurityModal(false)
-          if (securityAction === 'report') {
-            window.location.href = '/cards/physical'
-          } else if (securityAction === 'travel') {
-            window.location.href = '/cards/controls'
-          } else {
-            window.location.href = '/cards/controls'
-          }
-        }}
+        details={securityAction === 'report' ? [
+          `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
+          'Status: Immediately locked for security',
+          'Fraud Protection: Activated',
+          'Replacement Card: 1-2 business days',
+          'USDC Balance: Secure and accessible',
+          'Zero Liability: Full protection against fraud'
+        ] : [
+          `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
+          'International Transactions: Enabled',
+          'Travel Alerts: Activated',
+          'Foreign Exchange: No fees with USDC',
+          'Security Monitoring: Enhanced for travel',
+          'Support: 24/7 available while traveling'
+        ]}
         showCopy={true}
-        copyText={`Card Security: ${
-          securityAction === 'report' ? 'Lost/Stolen Report' :
-          securityAction === 'travel' ? 'Travel Notice' :
-          'Security Settings'
-        } | Card: ${selectedCard.last4} | Status: ${
-          securityAction === 'report' ? 'Secured' :
-          securityAction === 'travel' ? 'Travel Ready' :
-          'Protected'
-        }`}
-      />
-
-      {/* Upgrade Modal */}
-      <NotificationModal
-        open={showUpgradeModal}
-        onOpenChange={setShowUpgradeModal}
-        type="success"
-        title="Premium Features Available!"
-        message={`Upgrade your ${upgradeType} to unlock premium capabilities`}
-        details={
-          upgradeType === 'limits' ? [
-            "Premium Spending Limits:",
-            "• Daily limits up to $50,000",
-            "• Monthly limits up to $500,000", 
-            "• Per-transaction limits up to $25,000",
-            "• ATM daily limits up to $5,000",
-            "• Priority transaction processing",
-            "• Advanced spending analytics",
-            "• Custom limit scheduling"
-          ] : upgradeType === 'restrictions' ? [
-            "Premium Restriction Controls:",
-            "• Advanced merchant category controls",
-            "• Geographic spending restrictions",
-            "• Time-based transaction limits",
-            "• Velocity-based fraud protection",
-            "• Custom merchant whitelisting/blacklisting",
-            "• Real-time spending location tracking",
-            "• Advanced security rules engine"
-          ] : [
-            "Premium Notification Features:",
-            "• Real-time push notifications",
-            "• SMS alerts for all transactions",
-            "• Email summaries with analytics",
-            "• Custom notification rules",
-            "• Spending pattern alerts",
-            "• Fraud detection notifications",
-            "• Weekly/monthly spending reports"
-          ]
-        }
-        actionLabel="Upgrade Now"
-        onAction={() => {
-          setShowUpgradeModal(false)
-          window.location.href = '/profile'
-        }}
-        showCopy={true}
-        copyText={`Card Upgrade: ${upgradeType} Premium Features | ${new Date().toISOString()}`}
+        copyText={`Card Security: ${securityAction === 'report' ? 'Lost/Stolen Report' : 'Travel Notice'} | Card: ${selectedCard.last4} | Status: ${securityAction === 'report' ? 'Secured' : 'Travel Ready'}`}
       />
     </div>
   )

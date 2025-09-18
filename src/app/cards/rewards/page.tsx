@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { formatCurrency, StablecoinSymbol } from '@/lib/data'
+import { NotificationModal } from '@/components/ui/NotificationModal'
 
 interface RewardCategory {
   name: string
@@ -132,6 +133,8 @@ const recentCashback: RewardTransaction[] = [
 export default function RewardsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<'month' | 'quarter' | 'year'>('month')
   const [isRedeeming, setIsRedeeming] = useState(false)
+  const [showRedeemModal, setShowRedeemModal] = useState(false)
+  const [redeemType, setRedeemType] = useState('')
   
   const totalCashback = recentCashback.reduce((sum, tx) => sum + tx.cashback, 0)
   const totalSpent = recentCashback.reduce((sum, tx) => sum + tx.amount, 0)
@@ -147,25 +150,11 @@ export default function RewardsPage() {
 
   const handleRedeemRewards = async (type: string) => {
     setIsRedeeming(true)
+    setRedeemType(type)
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
-      const message = `${type} Redemption Process:\n\n` +
-        `Stablecoin Rewards System:\n` +
-        `• Your cashback rewards are earned in USDC\n` +
-        `• Instant redemption to your stablecoin balance\n` +
-        `• No minimum redemption amount required\n` +
-        `• Zero fees for reward redemptions\n\n` +
-        `Redemption Options:\n` +
-        `• Direct to USDC balance (instant)\n` +
-        `• Auto-invest in yield farming (compound growth)\n` +
-        `• Transfer to external wallet\n` +
-        `• Convert to gift cards or travel credits\n\n` +
-        `USD Financial's "Stablecoin IN, Stablecoin OUT" approach means your ` +
-        `rewards maintain stable value and can be immediately used across ` +
-        `our entire financial ecosystem.\n\n` +
-        `Processing ${type} redemption... Your USDC balance will be updated instantly!`
-      alert(message)
+      setShowRedeemModal(true)
     } catch (error) {
       console.error('Redemption failed:', error)
     } finally {
@@ -484,6 +473,39 @@ export default function RewardsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Enhanced Redeem Rewards Modal */}
+      <NotificationModal
+        open={showRedeemModal}
+        onOpenChange={setShowRedeemModal}
+        type="success"
+        title="Rewards Redemption Successful!"
+        message={`Your ${redeemType} redemption has been processed successfully`}
+        amount={formatCurrency(totalCashback)}
+        currency="USDC"
+        details={[
+          "Stablecoin Rewards System:",
+          "• Your cashback rewards are earned in USDC",
+          "• Instant redemption to your stablecoin balance",
+          "• No minimum redemption amount required",
+          "• Zero fees for reward redemptions",
+          "",
+          "Redemption Options:",
+          "• Direct to USDC balance (instant)",
+          "• Auto-invest in yield farming (compound growth)",
+          "• Transfer to external wallet",
+          "• Convert to gift cards or travel credits",
+          "",
+          `USD Financial's "Stablecoin IN, Stablecoin OUT" approach means your rewards maintain stable value and can be immediately used across our entire financial ecosystem.`
+        ]}
+        actionLabel="View Balance"
+        onAction={() => {
+          setShowRedeemModal(false)
+          window.location.href = '/accounts/wallet'
+        }}
+        showCopy={true}
+        copyText={`Rewards Redemption: ${redeemType} | ${formatCurrency(totalCashback)} USDC | ${new Date().toISOString()}`}
+      />
     </div>
   )
 }

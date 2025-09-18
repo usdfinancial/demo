@@ -83,7 +83,7 @@ const userCards: CardControl[] = [
     type: 'virtual',
     status: 'active',
     balance: 500.00,
-    currency: 'USDT',
+    currency: 'USDC',
     limits: {
       daily: 1000,
       monthly: 5000,
@@ -116,7 +116,9 @@ export default function CardControlsPage() {
   const [notifications, setNotifications] = useState(selectedCard.notifications)
   const [isUpdating, setIsUpdating] = useState(false)
   const [showSecurityModal, setShowSecurityModal] = useState(false)
-  const [securityAction, setSecurityAction] = useState<'report' | 'travel' | null>(null)
+  const [securityAction, setSecurityAction] = useState<'report' | 'travel' | 'security' | null>(null)
+  const [showUpdateModal, setShowUpdateModal] = useState(false)
+  const [updateType, setUpdateType] = useState<'limits' | 'restrictions' | 'notifications' | null>(null)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -213,6 +215,36 @@ export default function CardControlsPage() {
     }
   }
 
+  const handleUpdate = async (type: 'limits' | 'restrictions' | 'notifications') => {
+    setUpdateType(type)
+    setIsUpdating(true)
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Update the appropriate data
+      if (type === 'limits') {
+        await updateLimits()
+      } else if (type === 'restrictions') {
+        await updateCardRestrictions()
+      } else if (type === 'notifications') {
+        await updateCardNotifications()
+      }
+      
+      setShowUpdateModal(true)
+    } catch (error) {
+      console.error(`Failed to update ${type}:`, error)
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  const handleSecuritySettings = () => {
+    setSecurityAction('security')
+    setShowSecurityModal(true)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -223,7 +255,11 @@ export default function CardControlsPage() {
           <p className="text-muted-foreground mt-1">Manage your card settings, limits, and security preferences</p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" className="border-emerald-200 text-emerald-600 hover:bg-emerald-50">
+          <Button 
+            variant="outline" 
+            className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+            onClick={handleSecuritySettings}
+          >
             <Shield className="h-4 w-4 mr-2" />
             Security Settings
           </Button>
@@ -377,7 +413,7 @@ export default function CardControlsPage() {
 
                     <Button 
                       className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-                      onClick={updateLimits}
+                      onClick={() => handleUpdate('limits')}
                       disabled={isUpdating}
                     >
                       {isUpdating ? 'Updating...' : 'Update Spending Limits'}
@@ -477,7 +513,7 @@ export default function CardControlsPage() {
 
                     <Button 
                       className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-                      onClick={updateCardRestrictions}
+                      onClick={() => handleUpdate('restrictions')}
                       disabled={isUpdating}
                     >
                       {isUpdating ? 'Updating...' : 'Update Restrictions'}
@@ -545,7 +581,7 @@ export default function CardControlsPage() {
 
                     <Button 
                       className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-                      onClick={updateCardNotifications}
+                      onClick={() => handleUpdate('notifications')}
                       disabled={isUpdating}
                     >
                       {isUpdating ? 'Updating...' : 'Update Notification Settings'}
@@ -711,33 +747,123 @@ export default function CardControlsPage() {
         </div>
       </div>
 
-      {/* Security Action Modal */}
+      {/* Enhanced Security Action Modal */}
       <NotificationModal
         open={showSecurityModal}
         onOpenChange={setShowSecurityModal}
         type="card"
-        title={securityAction === 'report' ? 'Card Security Alert' : 'Travel Notice Activated'}
-        message={securityAction === 'report' 
-          ? 'Your card has been immediately secured and fraud protection activated'
-          : 'Travel notice has been set up successfully for international transactions'
+        title={
+          securityAction === 'report' ? 'Card Security Alert' :
+          securityAction === 'travel' ? 'Travel Notice Activated' :
+          'Security Settings Updated'
         }
-        details={securityAction === 'report' ? [
-          `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
-          'Status: Immediately locked for security',
-          'Fraud Protection: Activated',
-          'Replacement Card: 1-2 business days',
-          'USDC Balance: Secure and accessible',
-          'Zero Liability: Full protection against fraud'
-        ] : [
-          `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
-          'International Transactions: Enabled',
-          'Travel Alerts: Activated',
-          'Foreign Exchange: No fees with USDC',
-          'Security Monitoring: Enhanced for travel',
-          'Support: 24/7 available while traveling'
-        ]}
+        message={
+          securityAction === 'report' 
+            ? 'Your card has been immediately secured and fraud protection activated'
+            : securityAction === 'travel'
+            ? 'Travel notice has been set up successfully for international transactions'
+            : 'Your card security settings have been successfully configured'
+        }
+        details={
+          securityAction === 'report' ? [
+            `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
+            'Status: Immediately locked for security',
+            'Fraud Protection: Activated',
+            'Replacement Card: 1-2 business days',
+            'USDC Balance: Secure and accessible',
+            'Zero Liability: Full protection against fraud'
+          ] : securityAction === 'travel' ? [
+            `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
+            'International Transactions: Enabled',
+            'Travel Alerts: Activated',
+            'Foreign Exchange: No fees with USDC',
+            'Security Monitoring: Enhanced for travel',
+            'Support: 24/7 available while traveling'
+          ] : [
+            `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
+            'Security Features: All systems active',
+            'Fraud Monitoring: 24/7 protection enabled',
+            'PIN Security: Enhanced encryption',
+            'Transaction Alerts: Real-time notifications',
+            'Biometric Auth: Fingerprint & face recognition',
+            'Zero Liability: Complete fraud protection'
+          ]
+        }
+        actionLabel={
+          securityAction === 'report' ? 'Order Replacement' :
+          securityAction === 'travel' ? 'View Travel Tips' :
+          'View Security Dashboard'
+        }
+        onAction={() => {
+          setShowSecurityModal(false)
+          if (securityAction === 'report') {
+            window.location.href = '/cards/physical'
+          } else if (securityAction === 'travel') {
+            window.location.href = '/cards/controls'
+          } else {
+            window.location.href = '/cards/controls'
+          }
+        }}
         showCopy={true}
-        copyText={`Card Security: ${securityAction === 'report' ? 'Lost/Stolen Report' : 'Travel Notice'} | Card: ${selectedCard.last4} | Status: ${securityAction === 'report' ? 'Secured' : 'Travel Ready'}`}
+        copyText={`Card Security: ${
+          securityAction === 'report' ? 'Lost/Stolen Report' :
+          securityAction === 'travel' ? 'Travel Notice' :
+          'Security Settings'
+        } | Card: ${selectedCard.last4} | Status: ${
+          securityAction === 'report' ? 'Secured' :
+          securityAction === 'travel' ? 'Travel Ready' :
+          'Protected'
+        }`}
+      />
+
+      {/* Update Confirmation Modal */}
+      <NotificationModal
+        open={showUpdateModal}
+        onOpenChange={setShowUpdateModal}
+        type="success"
+        title="Settings Updated Successfully!"
+        message={`Your ${updateType} settings have been updated and are now active`}
+        details={
+          updateType === 'limits' ? [
+            `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
+            'Spending Limits Updated:',
+            `• Daily Limit: ${formatCurrency(limits.daily)}`,
+            `• Monthly Limit: ${formatCurrency(limits.monthly)}`,
+            `• Per Transaction: ${formatCurrency(limits.perTransaction)}`,
+            ...(selectedCard.type === 'physical' ? [`• ATM Daily: ${formatCurrency(limits.atm)}`] : []),
+            '',
+            'Changes take effect immediately and may take up to 24 hours to apply to all transactions.'
+          ] : updateType === 'restrictions' ? [
+            `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
+            'Transaction Restrictions Updated:',
+            `• Online Payments: ${restrictions.onlinePayments ? 'Enabled' : 'Disabled'}`,
+            ...(selectedCard.type === 'physical' ? [
+              `• Contactless Payments: ${restrictions.contactlessPayments ? 'Enabled' : 'Disabled'}`,
+              `• ATM Withdrawals: ${restrictions.atmWithdrawals ? 'Enabled' : 'Disabled'}`
+            ] : []),
+            `• International Transactions: ${restrictions.internationalTransactions ? 'Enabled' : 'Disabled'}`,
+            `• Restaurants: ${restrictions.restaurants ? 'Enabled' : 'Disabled'}`,
+            `• E-commerce: ${restrictions.ecommerce ? 'Enabled' : 'Disabled'}`,
+            '',
+            'Restriction changes are active immediately for enhanced security.'
+          ] : [
+            `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
+            'Notification Settings Updated:',
+            `• Transaction Alerts: ${notifications.transactions ? 'Enabled' : 'Disabled'}`,
+            `• Limit Exceeded Alerts: ${notifications.limitsExceeded ? 'Enabled' : 'Disabled'}`,
+            `• Suspicious Activity: ${notifications.suspiciousActivity ? 'Enabled' : 'Disabled'}`,
+            `• Monthly Statements: ${notifications.monthlyStatement ? 'Enabled' : 'Disabled'}`,
+            '',
+            'Notification preferences updated. You will receive alerts via email and push notifications.'
+          ]
+        }
+        actionLabel="View Card Details"
+        onAction={() => {
+          setShowUpdateModal(false)
+          window.location.href = '/cards'
+        }}
+        showCopy={true}
+        copyText={`Card Update: ${updateType} settings | Card: ${selectedCard.last4} | ${new Date().toISOString()}`}
       />
     </div>
   )

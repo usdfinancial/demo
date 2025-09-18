@@ -175,16 +175,16 @@ export function NotificationModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg relative">
+      <DialogContent className="max-w-2xl relative max-h-[90vh] overflow-y-auto">
         <DemoIndicator variant="minimal" />
-        <DialogHeader className="text-center pb-4">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-4">
-            <Icon className="w-8 h-8 text-white" />
+        <DialogHeader className="text-center pb-6">
+          <div className={`mx-auto w-20 h-20 bg-gradient-to-br ${config.bgGradient} rounded-3xl flex items-center justify-center mb-6 border-2 ${config.borderColor} shadow-lg`}>
+            <Icon className={`w-10 h-10 ${config.iconColor}`} />
           </div>
-          <DialogTitle className="text-2xl font-bold text-gray-900">
+          <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
             {title}
           </DialogTitle>
-          <DialogDescription className="text-gray-600">
+          <DialogDescription className="text-lg text-gray-600 mt-2">
             {message}
           </DialogDescription>
         </DialogHeader>
@@ -209,15 +209,45 @@ export function NotificationModal({
 
           {/* Details List */}
           {details && details.length > 0 && (
-            <div className="space-y-3">
-              <h4 className="font-semibold text-gray-900">Transaction Details:</h4>
-              <div className="space-y-2">
-                {details.map((detail, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                    <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-gray-700">{detail}</p>
-                  </div>
-                ))}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-gray-900 text-lg flex items-center gap-2">
+                <Icon className={`w-5 h-5 ${config.iconColor}`} />
+                Details:
+              </h4>
+              <div className="space-y-3">
+                {details.map((detail, index) => {
+                  // Handle empty lines for spacing
+                  if (detail.trim() === '') {
+                    return <div key={index} className="h-2"></div>
+                  }
+                  
+                  // Handle section headers (lines ending with colon)
+                  if (detail.endsWith(':')) {
+                    return (
+                      <div key={index} className="font-semibold text-gray-900 mt-4 mb-2 text-base">
+                        {detail}
+                      </div>
+                    )
+                  }
+                  
+                  // Handle bullet points
+                  if (detail.startsWith('•')) {
+                    return (
+                      <div key={index} className="flex items-start gap-3 pl-4">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-sm text-gray-700 leading-relaxed">{detail.substring(1).trim()}</p>
+                      </div>
+                    )
+                  }
+                  
+                  // Regular details with enhanced styling
+                  return (
+                    <div key={index} className={`flex items-start gap-3 p-4 bg-gradient-to-r ${config.bgGradient} rounded-xl border ${config.borderColor}`}>
+                      <CheckCircle className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-gray-800 leading-relaxed font-medium">{detail}</p>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           )}
@@ -239,12 +269,12 @@ export function NotificationModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             {showCopy && copyText && (
               <Button 
                 onClick={handleCopy}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 border-emerald-200 text-emerald-600 hover:bg-emerald-50 h-12"
               >
                 <Copy className="w-4 h-4 mr-2" />
                 {copied ? 'Copied!' : 'Copy Details'}
@@ -255,7 +285,7 @@ export function NotificationModal({
               <Button 
                 onClick={onAction}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 border-emerald-200 text-emerald-600 hover:bg-emerald-50 h-12"
               >
                 {actionLabel}
               </Button>
@@ -263,9 +293,9 @@ export function NotificationModal({
             
             <Button 
               onClick={() => onOpenChange(false)} 
-              className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg"
+              className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg h-12 font-semibold"
             >
-              <CheckCircle className="w-4 h-4 mr-2" />
+              <CheckCircle className="w-5 h-5 mr-2" />
               Done
             </Button>
           </div>

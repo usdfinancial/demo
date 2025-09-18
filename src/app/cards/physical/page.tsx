@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { formatCurrency, StablecoinSymbol } from '@/lib/data'
-import { NotificationModal } from '@/components/ui/NotificationModal'
 
 interface CardOrder {
   id: string
@@ -74,7 +73,6 @@ export default function PhysicalCardsPage() {
   })
   const [isOrdering, setIsOrdering] = useState(false)
   const [expressShipping, setExpressShipping] = useState(false)
-  const [showOrderModal, setShowOrderModal] = useState(false)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -111,9 +109,6 @@ export default function PhysicalCardsPage() {
       }
 
       setOrders(prev => [...prev, newOrder])
-      
-      // Show success modal
-      setShowOrderModal(true)
       
       // Reset form
       setShippingInfo({
@@ -442,30 +437,6 @@ export default function PhysicalCardsPage() {
           </Card>
         </div>
       </div>
-
-      {/* Order Success Modal */}
-      <NotificationModal
-        open={showOrderModal}
-        onOpenChange={setShowOrderModal}
-        type="success"
-        title="Physical Card Order Placed!"
-        message="Your physical card order has been successfully submitted"
-        details={[
-          `Card Type: ${selectedCardType.name}`,
-          `Material: ${selectedCardType.material}`,
-          `Color: ${selectedCardType.color}`,
-          `Shipping: ${expressShipping ? 'Express (2-3 days)' : 'Standard (5-7 days)'}`,
-          `Total Cost: ${formatCurrency((selectedCardType.price || 0) + (expressShipping ? 15 : 0))}`,
-          "Activation: Instant via mobile app when received"
-        ]}
-        actionLabel="Track Order"
-        onAction={() => {
-          setShowOrderModal(false)
-          window.scrollTo(0, 0)
-        }}
-        showCopy={true}
-        copyText={`Physical Card Order: ${selectedCardType.name} | ${new Date().toISOString()}`}
-      />
     </div>
   )
 }

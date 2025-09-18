@@ -15,7 +15,6 @@ import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
-import { NotificationModal } from '@/components/ui/NotificationModal'
 
 // Helper function to format currency
 const formatCurrency = (amount: number): string => {
@@ -79,7 +78,6 @@ export default function CardsPage() {
   const [selectedCard, setSelectedCard] = useState<DebitCard>(userCards[0])
   const [cards, setCards] = useState<DebitCard[]>(userCards)
   const [isLoading, setIsLoading] = useState(false)
-  const [showOrderModal, setShowOrderModal] = useState(false)
 
   const totalBalance = cards.reduce((sum, card) => sum + card.balance, 0)
   const totalSpend = cards.reduce((sum, card) => sum + card.monthlySpend, 0)
@@ -90,8 +88,14 @@ export default function CardsPage() {
       setCards(prev => prev.map(card => 
         card.id === cardId ? { ...card, status: card.status === 'active' ? 'locked' : 'active' } : card
       ))
+      if (selectedCard.id === cardId) {
+        setSelectedCard(prev => ({ 
+          ...prev, 
+          status: prev.status === 'active' ? 'locked' : 'active' 
+        }))
+      }
     } catch (error) {
-      console.error('Failed to toggle card status:', error)
+      console.error('Card lock/unlock failed:', error)
     } finally {
       setIsLoading(false)
     }
@@ -103,8 +107,8 @@ export default function CardsPage() {
   }
 
   const handleOrderCard = () => {
-    console.log('Demo: Card ordering initiated')
-    setShowOrderModal(true)
+    // Navigate to card ordering
+    window.location.href = '/cards/physical'
   }
 
   const handleCardSettings = () => {
@@ -277,10 +281,10 @@ export default function CardsPage() {
                     <Button 
                       size="sm" 
                       className="bg-gradient-to-r from-emerald-500 to-teal-500"
-                      onClick={handleOrderCard}
+                      onClick={() => window.location.href = '/cards/virtual'}
                     >
                       <Plus className="h-4 w-4 mr-1" />
-                      Order Card
+                      Add Card
                     </Button>
                   </div>
                 </TabsContent>
@@ -446,29 +450,6 @@ export default function CardsPage() {
         </Card>
       </div>
       </div>
-
-      {/* Order Card Modal */}
-      <NotificationModal
-        open={showOrderModal}
-        onOpenChange={setShowOrderModal}
-        type="success"
-        title="Card Order Initiated"
-        message="Your new card order has been successfully started"
-        details={[
-          "Card Type: Physical or Virtual (your choice)",
-          "Processing Time: 2-3 business days for virtual, 5-7 days for physical",
-          "Shipping: Free worldwide delivery",
-          "Activation: Instant via mobile app",
-          "Features: Contactless payments, global acceptance, real-time controls"
-        ]}
-        actionLabel="View Card Options"
-        onAction={() => {
-          setShowOrderModal(false)
-          window.location.href = '/cards/physical'
-        }}
-        showCopy={true}
-        copyText={`Card Order: New USD Financial Card | ${new Date().toISOString()}`}
-      />
     </AuthGuard>
   )
 }

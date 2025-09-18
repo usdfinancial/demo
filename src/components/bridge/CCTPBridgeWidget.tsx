@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
+import { NotificationModal } from '@/components/ui/NotificationModal';
 import useCCTP from '@/hooks/useCCTP';
 // import { useAlchemyCCTP } from '@/lib/blockchain/cctpAlchemyIntegration';
 import { CCTPNetwork, CCTP_TESTNET_CONTRACTS } from '@/lib/blockchain/stablecoin/cctpAdapter';
@@ -93,6 +94,13 @@ export function CCTPBridgeWidget({ className = '', onTransferComplete }: CCTPBri
     isValid: boolean;
     errors: string[];
     warnings: string[];
+  } | null>(null);
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [transferResult, setTransferResult] = useState<{
+    success: boolean;
+    txHash?: string;
+    message: string;
+    details: string[];
   } | null>(null);
 
   // Get Circle API status
@@ -181,21 +189,64 @@ export function CCTPBridgeWidget({ className = '', onTransferComplete }: CCTPBri
         recipient
       });
 
+      // Show success modal
+      setTransferResult({
+        success: true,
+        txHash: result.transferId,
+        message: `CCTP transfer initiated successfully`,
+        details: [
+          `Amount: ${amount} USDC`,
+          `From: ${getNetworkDetails(fromNetwork)?.name}`,
+          `To: ${getNetworkDetails(toNetwork)?.name}`,
+          `Recipient: ${formatAddress(recipient)}`,
+          `Transfer ID: ${result.transferId}`,
+          `Estimated Time: ${calculateTransferTime()}`,
+          `Status: Burn transaction submitted`
+        ]
+      });
+      setShowTransferModal(true);
+
       console.log('🎉 CCTP transfer completed successfully!', result);
     } catch (error) {
       console.error('❌ Transfer failed:', error);
-      // Show user-friendly error message
+      
+      // Show error modal
+      let errorMessage = 'Transfer failed. Please try again.';
+      let errorDetails = ['Please check your connection and try again'];
+      
       if (error instanceof Error) {
         if (error.message.includes('Insufficient USDC balance')) {
-          console.error('💡 Please ensure you have enough USDC in your wallet');
+          errorMessage = 'Insufficient USDC balance';
+          errorDetails = [
+            'Please ensure you have enough USDC in your wallet',
+            `Required: ${amount} USDC`,
+            `Available: ${cctpState.balances[fromNetwork] || '0'} USDC`,
+            'Add more USDC to your wallet and try again'
+          ];
         } else if (error.message.includes('User rejected')) {
-          console.error('💡 Transaction was cancelled by user');
+          errorMessage = 'Transaction cancelled by user';
+          errorDetails = [
+            'You cancelled the transaction in your wallet',
+            'No funds were transferred',
+            'You can try again when ready'
+          ];
         } else if (error.message.includes('gas')) {
-          console.error('💡 Not enough ETH for gas fees');
+          errorMessage = 'Insufficient gas fees';
+          errorDetails = [
+            'Not enough ETH for gas fees',
+            `Current gas balance: ${alchemyCCTP.gasBalance} ETH`,
+            'Add testnet ETH to your wallet',
+            'Visit https://sepoliafaucet.com/ for free testnet ETH'
+          ];
         }
       }
-      // The error will be handled by the CCTP state management
-      throw error;
+      
+      setTransferResult({
+        success: false,
+        message: errorMessage,
+        details: errorDetails
+      });
+      setShowTransferModal(true);
     }
   };
 
@@ -1294,6 +1345,23 @@ export function CCTPBridgeWidget({ className = '', onTransferComplete }: CCTPBri
           </p>
         </CardContent>
       </Card>
+
+      {/* Transfer Result Modal */}
+      <NotificationModal
+        open={showTransferModal}
+        onOpenChange={setShowTransferModal}
+        type={transferResult?.success ? "success" : "error"}
+        title={transferResult?.success ? "CCTP Transfer Initiated" : "Transfer Failed"}
+        message={transferResult?.message || ""}
+        amount={transferResult?.success ? `${amount} USDC` : ""}
+        currency="USDC"
+        details={transferResult?.details || []}
+        showCopy={true}
+        copyText={transferResult?.success 
+          ? `CCTP Transfer: ${amount} USDC from ${getNetworkDetails(fromNetwork)?.name} to ${getNetworkDetails(toNetwork)?.name} | TX: ${transferResult?.txHash}`
+          : `CCTP Transfer Failed: ${transferResult?.message}`
+        }
+      />
     </div>
   );
 }

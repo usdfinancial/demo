@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { formatCurrency, getStablecoinIcon, StablecoinSymbol } from '@/lib/data'
 import { useEnhancedAuth } from '@/components/providers/EnhancedAuthProvider'
+import { NotificationModal } from '@/components/ui/NotificationModal'
 import { SendTransactionFlow, SendTransactionData } from '@/components/send/SendTransactionFlow'
 import { RecipientInput } from '@/components/send/RecipientInput'
 import { AmountInput } from '@/components/send/AmountInput'
@@ -38,7 +39,7 @@ const recentContacts: Contact[] = [
     address: '0x8A4B7C17B8F4C4D6Ea9D4A2F1E2F2E8B9D3A5C7E',
     lastUsed: '2024-01-18',
     totalSent: 800,
-    preferredCoin: 'USDT'
+    preferredCoin: 'USDC'
   },
   {
     id: '3',
@@ -63,11 +64,12 @@ export default function SendMoneyPage() {
   const [showTransactionFlow, setShowTransactionFlow] = useState(false)
   const [selectedNetwork, setSelectedNetwork] = useState<string>('')
   const [selectedNetworkBalance, setSelectedNetworkBalance] = useState<any>(null)
+  const [showFeatureModal, setShowFeatureModal] = useState(false)
+  const [featureModalData, setFeatureModalData] = useState({ title: '', message: '', details: [] as string[] })
   
   // Get real balances from multi-chain data
   const availableBalances: Record<StablecoinSymbol, number> = {
-    'USDC': parseFloat(totalUSDC || '0'),
-    'USDT': 0 // TODO: Add USDT balance from multichain data when available
+    'USDC': parseFloat(totalUSDC || '0')
   }
   
   const currentBalance = availableBalances[stablecoin]
@@ -128,6 +130,51 @@ export default function SendMoneyPage() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`
   }
 
+  const handleScanQR = () => {
+    setFeatureModalData({
+      title: 'QR Code Scanner',
+      message: 'Scan recipient wallet address or payment request',
+      details: [
+        'Point your camera at a QR code to scan',
+        'Supports wallet addresses and payment requests',
+        'Automatically fills recipient and amount fields',
+        'Works with all major wallet QR formats',
+        'Demo: QR scanner would open camera interface'
+      ]
+    })
+    setShowFeatureModal(true)
+  }
+
+  const handleAddContact = () => {
+    setFeatureModalData({
+      title: 'Add New Contact',
+      message: 'Save frequently used wallet addresses',
+      details: [
+        'Add wallet address and contact name',
+        'Set preferred stablecoin for quick sends',
+        'View transaction history with each contact',
+        'Organize contacts by groups or tags',
+        'Demo: Contact form would open for new entry'
+      ]
+    })
+    setShowFeatureModal(true)
+  }
+
+  const handleQRGenerate = () => {
+    setFeatureModalData({
+      title: 'Generate Payment QR',
+      message: 'Create QR code for receiving payments',
+      details: [
+        'Generate QR code with your wallet address',
+        'Include specific amount and message',
+        'Share with others for easy payments',
+        'Compatible with all major wallets',
+        'Demo: QR generator would create shareable code'
+      ]
+    })
+    setShowFeatureModal(true)
+  }
+
   return (
     <div className="space-y-6">
       <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50 rounded-2xl border border-emerald-100 p-8 mb-8">
@@ -160,13 +207,29 @@ export default function SendMoneyPage() {
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <Button variant="outline" className="bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white">
+              <Button 
+                variant="outline" 
+                className="bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white"
+                onClick={handleScanQR}
+              >
                 <QrCode className="h-4 w-4 mr-2" />
                 Scan QR
               </Button>
-              <Button variant="outline" className="bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white">
+              <Button 
+                variant="outline" 
+                className="bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white"
+                onClick={handleAddContact}
+              >
                 <UserPlus className="h-4 w-4 mr-2" />
                 Add Contact
+              </Button>
+              <Button 
+                variant="outline" 
+                className="bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white"
+                onClick={handleQRGenerate}
+              >
+                <QrCode className="h-4 w-4 mr-2" />
+                QR
               </Button>
             </div>
           </div>
@@ -237,10 +300,10 @@ export default function SendMoneyPage() {
                 <div className="p-2 bg-emerald-100 rounded-lg">
                   <Send className="h-5 w-5 text-emerald-600" />
                 </div>
-                Send Stablecoins
+                Send USDC
               </CardTitle>
               <CardDescription className="text-slate-600">
-                Transfer USDC or USDT to any wallet address instantly with zero gas fees
+                Transfer USDC to any wallet address instantly with zero gas fees
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
@@ -274,8 +337,7 @@ export default function SendMoneyPage() {
                 onAmountChange={setAmount}
                 onStablecoinChange={setStablecoin}
                 availableBalances={{
-                  'USDC': selectedNetworkBalance?.balance || parseFloat(totalUSDC || '0'),
-                  'USDT': 0 // Disabled for USDC-focused experience
+                  'USDC': selectedNetworkBalance?.balance || parseFloat(totalUSDC || '0')
                 }}
                 useGasless={useGasless}
                 onGaslessChange={setUseGasless}
@@ -460,6 +522,16 @@ export default function SendMoneyPage() {
         onConfirm={handleTransactionComplete}
         onCancel={() => setShowTransactionFlow(false)}
         isOpen={showTransactionFlow}
+      />
+
+      {/* Feature Modal */}
+      <NotificationModal
+        open={showFeatureModal}
+        onOpenChange={setShowFeatureModal}
+        type="info"
+        title={featureModalData.title}
+        message={featureModalData.message}
+        details={featureModalData.details}
       />
     </div>
   )

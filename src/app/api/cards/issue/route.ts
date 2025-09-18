@@ -7,13 +7,12 @@ import { applyRateLimit, apiRateLimiter } from '@/lib/middleware/rateLimiting'
 import { validateRequest } from '@/lib/validation/middleware'
 import { cardService } from '@/lib/services/cardService'
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not configured')
+// Lazy Stripe initialization to avoid build-time failures in demo mode
+const getStripe = () => {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) return null
+  return new Stripe(key)
 }
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-12-18.acacia'
-})
 
 const IssueCardSchema = z.object({
   userId: z.string().uuid(),
@@ -39,24 +38,55 @@ export const POST = withErrorHandler(async (request: NextRequest, requestId: str
   const authenticatedUser = await authenticateApiRequest(request)
 
   // Validate request body
-  const { body } = await validateRequest(request, {
+  const validation = await validateRequest(request, {
     body: IssueCardSchema
   })
+  const body = validation.body
+  if (!body) {
+    throw new Error('Invalid request body')
+  }
 
   // Check if user can access this resource
   requireResourceAccess(body.userId)(authenticatedUser)
 
   try {
+    const stripe = getStripe()
+    if (!stripe) {
+      // Demo mode: return a mocked issued card response
+      return NextResponse.json({
+        success: true,
+        data: {
+          id: 'demo_card_' + body.cardholderId.slice(0, 8),
+          cardName: body.cardName,
+          last4: '4242',
+          brand: 'Visa',
+          expiryMonth: 12,
+          expiryYear: 2030,
+          status: 'active',
+          type: body.type,
+          currency: body.currency,
+          cardholderId: body.cardholderId,
+          spendingControls: body.spendingControls || undefined,
+          createdAt: new Date().toISOString(),
+          number: '4242 4242 4242 4242',
+          cvc: '123',
+          localStorageStatus: 'not_stored'
+        },
+        timestamp: new Date().toISOString(),
+        requestId
+      }, { status: 201 })
+    }
+
     // Verify cardholder exists and belongs to user
     const cardholder = await stripe.issuing.cardholders.retrieve(body.cardholderId)
-    
+
     if (cardholder.metadata?.userId !== body.userId) {
       throw new Error('Cardholder not found or access denied')
     }
 
     // Create spending controls if provided
     let spendingControls: Stripe.Issuing.CardCreateParams.SpendingControls | undefined
-    
+
     if (body.spendingControls) {
       spendingControls = {
         spending_limits: body.spendingControls.spendingLimits?.map(limit => ({
@@ -144,11 +174,11 @@ export const POST = withErrorHandler(async (request: NextRequest, requestId: str
 
   } catch (error) {
     console.error('Failed to issue Stripe card:', error)
-    
+
     if (error instanceof Stripe.errors.StripeError) {
       throw new Error(`Stripe error: ${error.message}`)
     }
-    
+
     throw new Error('Failed to issue card')
   }
 })
@@ -173,6 +203,7 @@ export const GET = withErrorHandler(async (request: NextRequest, requestId: stri
   try {
     // Get cards from local database first (faster and includes local metadata)
     let localCards = []
+
     try {
       localCards = await cardService.getUserCards(userId, true) // with Stripe sync
       console.log(`✅ Found ${localCards.length} cards in local database`)
@@ -211,6 +242,17 @@ export const GET = withErrorHandler(async (request: NextRequest, requestId: stri
     }
 
     // Fallback: Get all cards from Stripe directly
+    const stripe = getStripe()
+    if (!stripe) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+        dataSource: 'demo_mode',
+        timestamp: new Date().toISOString(),
+        requestId
+      })
+    }
+
     const cardholders = await stripe.issuing.cardholders.list({
       limit: 100
     })

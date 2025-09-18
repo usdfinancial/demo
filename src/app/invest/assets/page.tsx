@@ -528,7 +528,20 @@ export default function TokenizedAssetsPage() {
                   <Button 
                     variant="outline" 
                     className="w-full justify-start text-sm"
-                    onClick={() => alert(`Documentation for ${selectedAsset.name} would open here`)}
+                    onClick={() => {
+                      // Open educational modal about stablecoin-backed tokenized assets
+                      const message = `${selectedAsset.name} Educational Guide:\n\n` +
+                        `• Asset Type: ${selectedAsset.category}\n` +
+                        `• Risk Level: ${selectedAsset.riskLevel}\n` +
+                        `• Minimum Investment: ${formatCurrency(selectedAsset.minInvestment)}\n` +
+                        `• Expected Yield: ${selectedAsset.apy}%\n\n` +
+                        `This tokenized asset is backed by real-world assets and can be purchased with your USDC. ` +
+                        `All investments maintain stablecoin liquidity - you can exit back to USDC anytime.\n\n` +
+                        `USD Financial's "Stablecoin IN, Stablecoin OUT" approach means your investment ` +
+                        `journey starts and ends with stable value.`
+                      alert(message)
+                    }}
+                    title="Learn about stablecoin-backed tokenized investing"
                   >
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Learn More

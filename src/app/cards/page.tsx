@@ -6,6 +6,7 @@ import { useEnhancedAuth } from '@/components/providers/EnhancedAuthProvider'
 import { findUserByEmail } from '@/lib/demoUsers'
 import { MockDataExtensions } from '@/lib/demo/mockDataExtensions'
 import { demoCardService } from '@/lib/demo/demoServices'
+import { StablecoinSymbol } from '@/lib/data'
 import { CreditCard, Plus, Settings, Eye, EyeOff, Lock, Unlock, DollarSign, TrendingUp, Shield, Zap, Activity, Calendar, MapPin } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -65,7 +66,7 @@ const userCards: DebitCard[] = [
     expiryDate: '06/26',
     status: 'active',
     balance: 500.00,
-    currency: 'USDT',
+    currency: 'USDC',
     monthlySpend: 234.50,
     limits: { daily: 1000, monthly: 5000, atm: 0 },
     features: ['Online only', 'Instant creation', 'Disposable', 'Merchant controls']

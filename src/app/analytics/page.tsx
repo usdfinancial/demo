@@ -18,9 +18,9 @@ import {
 // Mock depeg data
 const depegAlerts = [
   {
-    stablecoin: 'USDT' as StablecoinSymbol,
-    currentPrice: 0.9994,
-    depegPercentage: 0.06,
+    stablecoin: 'USDC' as StablecoinSymbol,
+    currentPrice: 1.0001,
+    depegPercentage: 0.01,
     severity: 'low' as const,
     timestamp: new Date('2024-01-15T10:30:00Z')
   }
@@ -36,8 +36,7 @@ const marketData = {
 }
 
 const stablecoinPrices = [
-  { symbol: 'USDC' as StablecoinSymbol, price: 1.0001, change24h: 0.01, marketCap: 42500000000, volume24h: 8200000000 },
-  { symbol: 'USDT' as StablecoinSymbol, price: 0.9994, change24h: -0.06, marketCap: 85000000000, volume24h: 18400000000 }
+  { symbol: 'USDC' as StablecoinSymbol, price: 1.0001, change24h: 0.01, marketCap: 42500000000, volume24h: 8200000000 }
 ]
 
 export default function AnalyticsPage() {

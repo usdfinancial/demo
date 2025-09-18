@@ -309,7 +309,10 @@ export default function Dashboard() {
                     2 Alerts
                   </Button>
                 </Link>
-                <Button className="bg-white text-emerald-600 hover:bg-emerald-50 font-semibold">
+                <Button 
+                  className="bg-white text-emerald-600 hover:bg-emerald-50 font-semibold"
+                  onClick={() => window.location.href = '/accounts/wallet'}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Funds
                 </Button>
@@ -619,7 +622,16 @@ export default function Dashboard() {
                           <p className="font-medium text-sm text-violet-900">{insight.title}</p>
                           <p className="text-xs text-violet-700 mt-1">{insight.description}</p>
                           {activeInsight === index && (
-                            <Button size="sm" className="mt-2 bg-violet-600 hover:bg-violet-700 text-xs h-6">
+                            <Button 
+                              size="sm" 
+                              className="mt-2 bg-violet-600 hover:bg-violet-700 text-xs h-6"
+                              onClick={() => {
+                                if (insight.type === 'savings') window.location.href = '/accounts/wallet'
+                                else if (insight.type === 'security') window.location.href = '/accounts/abstract'
+                                else if (insight.type === 'opportunity') window.location.href = '/invest/auto'
+                                else if (insight.type === 'feature') window.location.href = '/accounts/abstract'
+                              }}
+                            >
                               {insight.action}
                             </Button>
                           )}

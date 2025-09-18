@@ -388,7 +388,25 @@ export default function AutoInvestPage() {
                           <Button 
                             size="sm" 
                             variant="outline"
-                            onClick={() => alert(`Settings for ${plan.name} would open here`)}
+                            onClick={() => {
+                              const message = `${plan.name} Auto-Invest Settings:\n\n` +
+                                `Current Configuration:\n` +
+                                `• Investment Amount: ${formatCurrency(plan.amount)}/${plan.frequency}\n` +
+                                `• Asset Allocation: ${plan.allocation.map(a => `${a.percentage}% ${a.asset}`).join(', ')}\n` +
+                                `• Risk Level: ${plan.riskLevel}\n` +
+                                `• Status: ${plan.isActive ? 'Active' : 'Paused'}\n\n` +
+                                `Available Settings:\n` +
+                                `• Adjust monthly investment amount\n` +
+                                `• Modify asset allocation percentages\n` +
+                                `• Change risk tolerance level\n` +
+                                `• Enable/disable auto-rebalancing\n` +
+                                `• Set stop-loss and take-profit triggers\n\n` +
+                                `All investments use your USDC balance and maintain stablecoin liquidity. ` +
+                                `You can pause, modify, or cancel your auto-invest plan anytime while keeping your ` +
+                                `accumulated assets in stable value.`
+                              alert(message)
+                            }}
+                            title="Configure auto-invest plan settings and allocation"
                           >
                             <Settings className="h-4 w-4" />
                           </Button>

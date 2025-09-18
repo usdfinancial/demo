@@ -667,8 +667,8 @@ export default function LandingPage() {
           </div>
           
           <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">
-            Your 
-            <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">stablecoin journey</span>
+            Your
+            <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent"> stablecoin journey</span>
             <br />
             <span className="text-4xl md:text-5xl">starts here</span>
           </h2>

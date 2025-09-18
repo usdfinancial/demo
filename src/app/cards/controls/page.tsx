@@ -587,7 +587,25 @@ export default function CardControlsPage() {
               <Button 
                 variant="outline" 
                 className="w-full"
-                onClick={() => alert('Report Lost/Stolen functionality would be implemented here')}
+                onClick={() => {
+                  const message = `Report Lost/Stolen Card:\n\n` +
+                    `Security Features:\n` +
+                    `• Instant card freeze to prevent unauthorized use\n` +
+                    `• 24/7 fraud monitoring and alerts\n` +
+                    `• Zero liability protection for fraudulent charges\n` +
+                    `• Emergency replacement card (1-2 business days)\n` +
+                    `• Dispute resolution for unauthorized transactions\n\n` +
+                    `USD Financial's stablecoin-native security ensures your USDC remains safe. ` +
+                    `All card transactions are backed by your stablecoin balance, providing ` +
+                    `transparent, real-time spending control.\n\n` +
+                    `Report Process:\n` +
+                    `1. Immediate card deactivation\n` +
+                    `2. Fraud investigation initiated\n` +
+                    `3. Replacement card issued\n` +
+                    `4. USDC balance remains secure and accessible`
+                  alert(message)
+                }}
+                title="Report lost or stolen card with instant security protection"
               >
                 <AlertTriangle className="h-4 w-4 mr-2" />
                 Report Lost/Stolen
@@ -605,7 +623,27 @@ export default function CardControlsPage() {
               <Button 
                 variant="outline" 
                 className="w-full"
-                onClick={() => alert('Travel Notice functionality would be implemented here')}
+                onClick={() => {
+                  const message = `Travel Notice Setup:\n\n` +
+                    `Prevent Transaction Declines:\n` +
+                    `• Notify us of your travel plans to avoid card blocks\n` +
+                    `• Set travel dates and destinations\n` +
+                    `• Enable international transaction permissions\n` +
+                    `• Receive travel-specific security alerts\n\n` +
+                    `Stablecoin Travel Benefits:\n` +
+                    `• No foreign exchange fees with USDC\n` +
+                    `• Real-time spending in local currency\n` +
+                    `• Transparent exchange rates\n` +
+                    `• Global acceptance at millions of merchants\n\n` +
+                    `Travel Setup Process:\n` +
+                    `1. Enter travel dates and destinations\n` +
+                    `2. Enable international spending permissions\n` +
+                    `3. Set travel-specific spending limits\n` +
+                    `4. Receive confirmation and travel tips\n\n` +
+                    `Your USDC balance travels with you - no currency conversion needed!`
+                  alert(message)
+                }}
+                title="Set up travel notice to prevent transaction declines abroad"
               >
                 <MapPin className="h-4 w-4 mr-2" />
                 Travel Notice

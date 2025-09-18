@@ -175,109 +175,114 @@ export function NotificationModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl relative max-h-[90vh] overflow-y-auto">
+      <DialogContent 
+        className="max-w-lg max-h-[80vh] overflow-hidden"
+        style={{
+          position: 'fixed',
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 200,
+          margin: 0
+        }}
+      >
         <DemoIndicator variant="minimal" />
-        <DialogHeader className="text-center pb-6">
-          <div className={`mx-auto w-20 h-20 bg-gradient-to-br ${config.bgGradient} rounded-3xl flex items-center justify-center mb-6 border-2 ${config.borderColor} shadow-lg`}>
-            <Icon className={`w-10 h-10 ${config.iconColor}`} />
+        <DialogHeader className="text-center pb-4">
+          <div className={`mx-auto w-16 h-16 bg-gradient-to-br ${config.bgGradient} rounded-2xl flex items-center justify-center mb-4 border-2 ${config.borderColor} shadow-lg`}>
+            <Icon className={`w-8 h-8 ${config.iconColor}`} />
           </div>
-          <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
             {title}
           </DialogTitle>
-          <DialogDescription className="text-lg text-gray-600 mt-2">
+          <DialogDescription className="text-base text-gray-600 mt-1">
             {message}
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-6 py-2">
+        <div className="space-y-4 py-1">
           {/* Amount Display */}
           {amount && currency && (
-            <div className={`relative overflow-hidden bg-gradient-to-br ${config.bgGradient} rounded-2xl p-6 border ${config.borderColor}`}>
-              <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full opacity-30 -translate-y-12 translate-x-12"></div>
+            <div className={`relative overflow-hidden bg-gradient-to-br ${config.bgGradient} rounded-xl p-4 border ${config.borderColor}`}>
               <div className="relative text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <DollarSign className={`w-5 h-5 ${config.iconColor}`} />
-                  <Badge className={config.badgeColor}>
+                  <DollarSign className={`w-4 h-4 ${config.iconColor}`} />
+                  <Badge className={`${config.badgeColor} text-xs`}>
                     {type.charAt(0).toUpperCase() + type.slice(1)}
                   </Badge>
                 </div>
-                <p className="text-3xl font-bold text-gray-900">{amount}</p>
-                <p className="text-lg text-gray-700">{currency}</p>
+                <p className="text-2xl font-bold text-gray-900">{amount}</p>
+                <p className="text-sm text-gray-700">{currency}</p>
               </div>
             </div>
           )}
 
-          {/* Details List */}
+          {/* Details List - Compact Version */}
           {details && details.length > 0 && (
-            <div className="space-y-4">
-              <h4 className="font-semibold text-gray-900 text-lg flex items-center gap-2">
-                <Icon className={`w-5 h-5 ${config.iconColor}`} />
-                Details:
-              </h4>
-              <div className="space-y-3">
-                {details.map((detail, index) => {
-                  // Handle empty lines for spacing
+            <div className="space-y-3">
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {details.slice(0, 8).map((detail, index) => {
+                  // Skip empty lines in compact mode
                   if (detail.trim() === '') {
-                    return <div key={index} className="h-2"></div>
+                    return null
                   }
                   
                   // Handle section headers (lines ending with colon)
                   if (detail.endsWith(':')) {
                     return (
-                      <div key={index} className="font-semibold text-gray-900 mt-4 mb-2 text-base">
+                      <div key={index} className="font-semibold text-gray-900 text-sm mt-2 mb-1">
                         {detail}
                       </div>
                     )
                   }
                   
-                  // Handle bullet points
+                  // Handle bullet points - more compact
                   if (detail.startsWith('•')) {
                     return (
-                      <div key={index} className="flex items-start gap-3 pl-4">
-                        <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-sm text-gray-700 leading-relaxed">{detail.substring(1).trim()}</p>
+                      <div key={index} className="flex items-start gap-2 pl-2">
+                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                        <p className="text-xs text-gray-700 leading-relaxed">{detail.substring(1).trim()}</p>
                       </div>
                     )
                   }
                   
-                  // Regular details with enhanced styling
+                  // Regular details - more compact
                   return (
-                    <div key={index} className={`flex items-start gap-3 p-4 bg-gradient-to-r ${config.bgGradient} rounded-xl border ${config.borderColor}`}>
-                      <CheckCircle className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                      <p className="text-sm text-gray-800 leading-relaxed font-medium">{detail}</p>
+                    <div key={index} className={`flex items-start gap-2 p-3 bg-gradient-to-r ${config.bgGradient} rounded-lg border ${config.borderColor}`}>
+                      <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-xs text-gray-800 leading-relaxed font-medium">{detail}</p>
                     </div>
                   )
                 })}
+                {details.length > 8 && (
+                  <div className="text-xs text-gray-500 text-center py-1">
+                    +{details.length - 8} more details available
+                  </div>
+                )}
               </div>
             </div>
           )}
           
-          {/* Demo Notice */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Sparkles className="w-3 h-3 text-blue-600" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-blue-900 mb-1">Demo Experience</h4>
-                <p className="text-sm text-blue-800 leading-relaxed">
-                  This is a demonstration of USD Financial's {type} functionality. 
-                  In production, this would execute real blockchain transactions with your USDC balance.
-                </p>
-              </div>
+          {/* Demo Notice - Compact */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 border border-blue-200">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-blue-600 flex-shrink-0" />
+              <p className="text-xs text-blue-800">
+                Demo: USD Financial {type} functionality showcase
+              </p>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          {/* Action Buttons - Compact */}
+          <div className="flex gap-2 pt-2">
             {showCopy && copyText && (
               <Button 
                 onClick={handleCopy}
                 variant="outline"
-                className="flex-1 border-emerald-200 text-emerald-600 hover:bg-emerald-50 h-12"
+                size="sm"
+                className="flex-1 border-emerald-200 text-emerald-600 hover:bg-emerald-50 h-9"
               >
-                <Copy className="w-4 h-4 mr-2" />
-                {copied ? 'Copied!' : 'Copy Details'}
+                <Copy className="w-3 h-3 mr-1" />
+                {copied ? 'Copied!' : 'Copy'}
               </Button>
             )}
             
@@ -285,7 +290,8 @@ export function NotificationModal({
               <Button 
                 onClick={onAction}
                 variant="outline"
-                className="flex-1 border-emerald-200 text-emerald-600 hover:bg-emerald-50 h-12"
+                size="sm"
+                className="flex-1 border-emerald-200 text-emerald-600 hover:bg-emerald-50 h-9"
               >
                 {actionLabel}
               </Button>
@@ -293,9 +299,10 @@ export function NotificationModal({
             
             <Button 
               onClick={() => onOpenChange(false)} 
-              className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg h-12 font-semibold"
+              size="sm"
+              className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg h-9 font-semibold"
             >
-              <CheckCircle className="w-5 h-5 mr-2" />
+              <CheckCircle className="w-4 h-4 mr-1" />
               Done
             </Button>
           </div>

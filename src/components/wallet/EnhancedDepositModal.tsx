@@ -24,7 +24,9 @@ import {
   Clock,
   CheckCircle,
   QrCode,
-  AlertTriangle
+  AlertTriangle,
+  Activity,
+  Sparkles
 } from 'lucide-react'
 
 interface Network {
@@ -477,135 +479,228 @@ export function EnhancedDepositModal({
         </div>
       </DialogContent>
 
-      {/* Explorer Modal */}
+      {/* Enhanced Explorer Modal */}
       <Dialog open={showExplorerModal} onOpenChange={setShowExplorerModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ExternalLink className="w-5 h-5 text-emerald-600" />
+        <DialogContent className="max-w-lg">
+          <DialogHeader className="text-center pb-4">
+            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-4">
+              <ExternalLink className="w-8 h-8 text-white" />
+            </div>
+            <DialogTitle className="text-2xl font-bold text-gray-900">
               Blockchain Explorer
             </DialogTitle>
-            <DialogDescription>
-              View transaction details on the blockchain
+            <DialogDescription className="text-gray-600">
+              View your wallet on the {selectedNetwork?.displayName || 'Sepolia'} blockchain
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                  <span className="text-lg">{selectedNetwork?.icon || '🔗'}</span>
+          
+          <div className="space-y-6 py-2">
+            {/* Network Info Card */}
+            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-teal-50 to-blue-50 rounded-2xl p-6 border border-emerald-200">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100 rounded-full opacity-20 -translate-y-16 translate-x-16"></div>
+              <div className="relative">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                    <span className="text-2xl">{selectedNetwork?.icon || '🔗'}</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-emerald-900">{selectedNetwork?.displayName || 'Sepolia Testnet'}</h3>
+                    <p className="text-sm text-emerald-700">Ethereum Blockchain Network</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium text-emerald-900">{selectedNetwork?.displayName || 'Sepolia Testnet'}</p>
-                  <p className="text-sm text-emerald-700">Blockchain Explorer</p>
-                </div>
-              </div>
-              <div className="bg-white rounded-lg p-3 border">
-                <p className="text-xs text-gray-500 mb-1">Address:</p>
-                <p className="font-mono text-sm break-all text-gray-900">{getCurrentAddress()}</p>
-              </div>
-            </div>
-            
-            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-blue-800">
-                  <p className="font-medium">Demo Mode</p>
-                  <p>In production, this would open the blockchain explorer in a new tab to view transaction history and address details.</p>
+                
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Copy className="w-4 h-4 text-gray-500" />
+                    <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Wallet Address</span>
+                  </div>
+                  <p className="font-mono text-sm text-gray-900 break-all leading-relaxed">
+                    {getCurrentAddress()}
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="pt-4 border-t space-y-2">
-              <Button 
-                onClick={() => {
-                  console.log(`🌐 Would open: ${explorerUrl}`)
-                  setShowExplorerModal(false)
-                }} 
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
-              >
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Open Explorer (Demo)
-              </Button>
+            {/* Features Preview */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                  <Activity className="w-4 h-4 text-blue-600" />
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-1">Transaction History</h4>
+                <p className="text-xs text-gray-600">View all wallet transactions</p>
+              </div>
+              
+              <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
+                  <Shield className="w-4 h-4 text-purple-600" />
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-1">Smart Contracts</h4>
+                <p className="text-xs text-gray-600">Interact with DeFi protocols</p>
+              </div>
+            </div>
+            
+            {/* Demo Notice */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Sparkles className="w-3 h-3 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-blue-900 mb-1">Demo Experience</h4>
+                  <p className="text-sm text-blue-800 leading-relaxed">
+                    In production, clicking "Open Explorer" would launch {selectedNetwork?.displayName || 'Sepolia'} blockchain explorer 
+                    in a new tab, showing real-time transaction data and smart contract interactions.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-2">
               <Button 
                 variant="outline"
                 onClick={() => setShowExplorerModal(false)} 
-                className="w-full"
+                className="flex-1"
               >
                 Close
+              </Button>
+              <Button 
+                onClick={() => {
+                  console.log(`🌐 Demo: Would open ${explorerUrl}`)
+                  // Show a brief success animation
+                  setShowExplorerModal(false)
+                }} 
+                className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Open Explorer
               </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* QR Code Modal */}
+      {/* Enhanced QR Code Modal */}
       <Dialog open={showQRModal} onOpenChange={setShowQRModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <QrCode className="w-5 h-5 text-emerald-600" />
-              QR Code
+        <DialogContent className="max-w-lg">
+          <DialogHeader className="text-center pb-4">
+            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-4">
+              <QrCode className="w-8 h-8 text-white" />
+            </div>
+            <DialogTitle className="text-2xl font-bold text-gray-900">
+              QR Code - {getAddressType()}
             </DialogTitle>
-            <DialogDescription>
-              Scan with your mobile wallet to send funds
+            <DialogDescription className="text-gray-600">
+              Scan with your mobile wallet to send funds instantly
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          
+          <div className="space-y-6 py-2">
+            {/* QR Code Display */}
             <div className="text-center">
-              <div className="w-48 h-48 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl mx-auto flex items-center justify-center border-2 border-emerald-200">
-                <div className="text-center">
-                  <QrCode className="w-16 h-16 text-emerald-600 mx-auto mb-3" />
-                  <p className="text-sm font-medium text-emerald-800">QR Code</p>
-                  <p className="text-xs text-emerald-600">Demo Placeholder</p>
+              <div className="relative mx-auto w-56 h-56 bg-gradient-to-br from-white via-emerald-50 to-teal-50 rounded-3xl flex items-center justify-center border-4 border-emerald-200 shadow-lg">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/20 to-teal-100/20 rounded-3xl"></div>
+                <div className="relative text-center">
+                  <QrCode className="w-20 h-20 text-emerald-600 mx-auto mb-4" />
+                  <div className="space-y-1">
+                    <p className="text-lg font-bold text-emerald-800">QR Code</p>
+                    <p className="text-sm text-emerald-600">Demo Preview</p>
+                    <div className="flex items-center justify-center gap-1 mt-2">
+                      <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse delay-75"></div>
+                      <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse delay-150"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-3">
-              <div className="p-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">{selectedNetwork?.icon || '🔗'}</span>
+            {/* Address Information */}
+            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-teal-50 to-blue-50 rounded-2xl p-6 border border-emerald-200">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-teal-100 rounded-full opacity-30 -translate-y-12 translate-x-12"></div>
+              <div className="relative">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                    <span className="text-2xl">{selectedNetwork?.icon || '🔗'}</span>
+                  </div>
                   <div>
-                    <p className="text-sm font-medium text-emerald-900">{getAddressType()}</p>
-                    <p className="text-xs text-emerald-700">{selectedNetwork?.displayName || 'Sepolia'}</p>
+                    <h3 className="font-bold text-emerald-900">{getAddressType()}</h3>
+                    <p className="text-sm text-emerald-700">{selectedNetwork?.displayName || 'Sepolia Testnet'}</p>
                   </div>
                 </div>
-                <div className="bg-white rounded-lg p-2 border">
-                  <p className="font-mono text-xs break-all text-gray-900">{qrAddress}</p>
-                </div>
-              </div>
-
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-start gap-2">
-                  <Smartphone className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm text-blue-800">
-                    <p className="font-medium">How to use:</p>
-                    <ul className="text-xs mt-1 space-y-1">
-                      <li>• Open your mobile wallet app</li>
-                      <li>• Scan this QR code</li>
-                      <li>• Enter amount and confirm</li>
-                      <li>• Funds arrive in {selectedNetwork?.estimatedTime || '30 seconds'}</li>
-                    </ul>
+                
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Smartphone className="w-4 h-4 text-gray-500" />
+                    <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Wallet Address</span>
                   </div>
+                  <p className="font-mono text-sm text-gray-900 break-all leading-relaxed">
+                    {qrAddress}
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="pt-4 border-t space-y-2">
+            {/* Instructions */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                  <Smartphone className="w-4 h-4 text-blue-600" />
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-2">Mobile Scan</h4>
+                <ul className="text-xs text-gray-600 space-y-1">
+                  <li>• Open wallet app</li>
+                  <li>• Scan QR code</li>
+                  <li>• Enter amount</li>
+                </ul>
+              </div>
+              
+              <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mb-3">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-2">Fast Transfer</h4>
+                <ul className="text-xs text-gray-600 space-y-1">
+                  <li>• Instant confirmation</li>
+                  <li>• Secure transaction</li>
+                  <li>• {selectedNetwork?.estimatedTime || '30 seconds'} arrival</li>
+                </ul>
+              </div>
+            </div>
+            
+            {/* Demo Notice */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Sparkles className="w-3 h-3 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-blue-900 mb-1">Demo QR Code</h4>
+                  <p className="text-sm text-blue-800 leading-relaxed">
+                    In production, this would display a scannable QR code containing your wallet address. 
+                    Mobile wallets can scan this for quick and secure fund transfers.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-2">
               <Button 
                 onClick={() => copyToClipboard(qrAddress, getAddressType())}
                 variant="outline"
-                className="w-full"
+                className="flex-1"
               >
                 <Copy className="w-4 h-4 mr-2" />
                 Copy Address
               </Button>
               <Button 
                 onClick={() => setShowQRModal(false)} 
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
+                className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg"
               >
-                Close
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Done
               </Button>
             </div>
           </div>

@@ -41,21 +41,49 @@ export const POST = withErrorHandler(async (request: NextRequest, requestId: str
   try {
     const stripe = getStripe()
 
-    // Demo mode: return mock card details when Stripe is not configured
+    // Demo mode: return rich mock card details for elegant demo experience
     if (!stripe) {
+      const cardVariants = [
+        { number: '4242 4242 4242 4242', last4: '4242', brand: 'Visa', cvc: '123' },
+        { number: '5555 5555 5555 4444', last4: '4444', brand: 'Mastercard', cvc: '456' },
+        { number: '4000 0566 5566 5556', last4: '5556', brand: 'Visa', cvc: '789' },
+        { number: '3782 822463 10005', last4: '0005', brand: 'American Express', cvc: '1234' }
+      ]
+      
+      const variant = cardVariants[Math.floor(Math.random() * cardVariants.length)]
+      
+      const mockCardDetails = {
+        id: body.cardId,
+        number: variant.number,
+        cvc: variant.cvc,
+        expiryMonth: Math.floor(Math.random() * 12) + 1,
+        expiryYear: new Date().getFullYear() + Math.floor(Math.random() * 5) + 1,
+        cardName: `Demo ${variant.brand} Card`,
+        last4: variant.last4,
+        brand: variant.brand,
+        status: 'active' as const,
+        type: 'virtual' as const,
+        currency: 'usd' as const,
+        spendingControls: {
+          spending_limits: [
+            { amount: 500000, interval: 'daily' as const },
+            { amount: 2000000, interval: 'monthly' as const }
+          ],
+          blocked_categories: [],
+          allowed_categories: ['gas_stations', 'grocery_stores', 'restaurants']
+        },
+        metadata: {
+          cardName: `Demo ${variant.brand} Card`,
+          userId: body.userId,
+          demoMode: 'true'
+        },
+        createdAt: new Date().toISOString()
+      }
+      
       return NextResponse.json({
         success: true,
-        data: {
-          id: body.cardId,
-          number: '4242 4242 4242 4242',
-          cvc: '123',
-          expiryMonth: 12,
-          expiryYear: 2030,
-          cardName: 'Demo Card',
-          last4: '4242',
-          brand: 'Visa',
-          status: 'active'
-        },
+        data: mockCardDetails,
+        dataSource: 'demo_mode',
         timestamp: new Date().toISOString(),
         requestId
       })

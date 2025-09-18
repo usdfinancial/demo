@@ -58,18 +58,49 @@ export const POST = withErrorHandler(async (request: NextRequest, requestId: str
   try {
     const stripe = getStripe()
 
-    // Demo mode: if Stripe is not configured, return a mocked response
+    // Demo mode: generate rich mock cardholder data for elegant demo experience
     if (!stripe) {
+      const mockCardholder = {
+        id: `demo_ch_${body.userId.slice(0, 8)}_${Date.now()}`,
+        name: `${body.firstName} ${body.lastName}`,
+        email: body.email,
+        status: 'active' as const,
+        type: body.type,
+        phoneNumber: body.phoneNumber || `+1${Math.floor(Math.random() * 9000000000 + 1000000000)}`,
+        individual: body.type === 'individual' ? {
+          firstName: body.firstName,
+          lastName: body.lastName,
+          dateOfBirth: body.dateOfBirth
+        } : undefined,
+        billing: {
+          address: {
+            line1: body.address.line1,
+            line2: body.address.line2,
+            city: body.address.city,
+            state: body.address.state,
+            postalCode: body.address.postalCode,
+            country: body.address.country || 'US'
+          }
+        },
+        requirements: {
+          currentDeadline: null,
+          currentlyDue: [],
+          disabledReason: null,
+          errors: [],
+          pastDue: [],
+          pendingVerification: []
+        },
+        createdAt: new Date().toISOString(),
+        metadata: {
+          userId: body.userId,
+          createdBy: 'usd-financial-demo',
+          demoMode: 'true'
+        }
+      }
+      
       return NextResponse.json({
         success: true,
-        data: {
-          id: 'demo_ch_' + body.userId.slice(0, 8),
-          name: `${body.firstName} ${body.lastName}`,
-          email: body.email,
-          status: 'active',
-          type: body.type,
-          createdAt: new Date().toISOString()
-        },
+        data: mockCardholder,
         timestamp: new Date().toISOString(),
         requestId
       }, { status: 201 })
@@ -148,10 +179,30 @@ export const GET = withErrorHandler(async (request: NextRequest, requestId: stri
     const stripe = getStripe()
 
     if (!stripe) {
-      // Demo mode: return empty list or mocked cardholders
+      // Demo mode: return rich mock cardholders for elegant demo experience
+      const mockCardholders = [
+        {
+          id: `demo_ch_${userId.slice(0, 8)}_primary`,
+          name: 'John Doe',
+          email: 'john.doe@example.com',
+          status: 'active' as const,
+          type: 'individual' as const,
+          createdAt: new Date(Date.now() - 86400000).toISOString() // 1 day ago
+        },
+        {
+          id: `demo_ch_${userId.slice(0, 8)}_business`,
+          name: 'Jane Smith',
+          email: 'jane.smith@company.com',
+          status: 'active' as const,
+          type: 'company' as const,
+          createdAt: new Date(Date.now() - 172800000).toISOString() // 2 days ago
+        }
+      ]
+      
       return NextResponse.json({
         success: true,
-        data: [],
+        data: mockCardholders,
+        dataSource: 'demo_mode',
         timestamp: new Date().toISOString(),
         requestId
       })

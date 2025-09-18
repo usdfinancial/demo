@@ -5,11 +5,12 @@ import { TrendingUp, Zap, Target, DollarSign, Shield, Activity, Layers, ArrowUpD
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
+import { Progress } from '@/components/ui/progress'
+import { NotificationModal } from '@/components/ui/NotificationModal'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Progress } from '@/components/ui/progress'
 import { Switch } from '@/components/ui/switch'
+import { Input } from '@/components/ui/input'
 import { formatCurrency, StablecoinSymbol } from '@/lib/data'
 
 interface DeFiProtocol {
@@ -184,6 +185,10 @@ export default function DeFiPage() {
   const [isDepositing, setIsDepositing] = useState(false)
   const [autoCompound, setAutoCompound] = useState(true)
   const [selectedTab, setSelectedTab] = useState('protocols')
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showErrorModal, setShowErrorModal] = useState(false)
+  const [showActionModal, setShowActionModal] = useState(false)
+  const [modalData, setModalData] = useState({ title: '', message: '', amount: '', currency: '', details: [] as string[] })
 
   const totalDeposited = yieldFarms.reduce((sum, farm) => sum + farm.yourStake, 0) + 
                          liquidityPools.reduce((sum, pool) => sum + pool.yourLiquidity, 0)
@@ -221,7 +226,18 @@ export default function DeFiPage() {
 
   const handleDeposit = async () => {
     if (!selectedProtocol || !depositAmount || parseFloat(depositAmount) < selectedProtocol.minDeposit) {
-      alert(`Minimum deposit is ${formatCurrency(selectedProtocol?.minDeposit || 0)}`)
+      setModalData({
+        title: 'Minimum Deposit Required',
+        message: `Please enter at least ${formatCurrency(selectedProtocol?.minDeposit || 0)} to proceed`,
+        amount: formatCurrency(selectedProtocol?.minDeposit || 0),
+        currency: selectedCurrency,
+        details: [
+          `Protocol: ${selectedProtocol?.name || 'Unknown'}`,
+          `Current APY: ${selectedProtocol?.apy || 0}%`,
+          `Risk Level: ${selectedProtocol?.risk || 'Unknown'}`
+        ]
+      })
+      setShowErrorModal(true)
       return
     }
 
@@ -229,7 +245,21 @@ export default function DeFiPage() {
     try {
       // Simulate DeFi interaction
       await new Promise(resolve => setTimeout(resolve, 3000))
-      alert(`Successfully deposited ${formatCurrency(parseFloat(depositAmount))} ${selectedCurrency} to ${selectedProtocol.name}!`)
+      
+      setModalData({
+        title: 'DeFi Deposit Successful!',
+        message: `Successfully deposited to ${selectedProtocol.name}`,
+        amount: formatCurrency(parseFloat(depositAmount)),
+        currency: selectedCurrency,
+        details: [
+          `Protocol: ${selectedProtocol.name}`,
+          `Amount: ${formatCurrency(parseFloat(depositAmount))} ${selectedCurrency}`,
+          `Expected APY: ${selectedProtocol.apy}%`,
+          `Auto-compound: ${autoCompound ? 'Enabled' : 'Disabled'}`,
+          `Network: Ethereum Sepolia Testnet`
+        ]
+      })
+      setShowSuccessModal(true)
       setDepositAmount('')
     } catch (error) {
       console.error('Deposit failed:', error)
@@ -239,19 +269,32 @@ export default function DeFiPage() {
   }
 
   const handleQuickAction = (action: string, id?: string) => {
-    switch (action) {
-      case 'harvest':
-        alert(`Harvesting rewards for ${id}...`)
-        break
-      case 'compound':
-        alert(`Auto-compounding rewards for ${id}...`)
-        break
-      case 'withdraw':
-        alert(`Withdrawing from ${id}...`)
-        break
-      default:
-        break
+    const farm = yieldFarms.find(f => f.id === id)
+    const actionTitles = {
+      harvest: 'Rewards Harvested!',
+      compound: 'Auto-Compound Activated!',
+      withdraw: 'Withdrawal Completed!'
     }
+    
+    const actionMessages = {
+      harvest: `Successfully harvested rewards from ${farm?.name || 'farm'}`,
+      compound: `Auto-compounding enabled for ${farm?.name || 'farm'}`,
+      withdraw: `Successfully withdrew from ${farm?.name || 'farm'}`
+    }
+
+    setModalData({
+      title: actionTitles[action as keyof typeof actionTitles] || 'Action Completed',
+      message: actionMessages[action as keyof typeof actionMessages] || `${action} completed`,
+      amount: farm?.rewards ? formatCurrency(farm.rewards) : '0',
+      currency: 'USDC',
+      details: [
+        `Farm: ${farm?.name || 'Unknown'}`,
+        `Protocol: ${farm?.protocol || 'Unknown'}`,
+        `Action: ${action.charAt(0).toUpperCase() + action.slice(1)}`,
+        `Network: Ethereum Sepolia Testnet`
+      ]
+    })
+    setShowActionModal(true)
   }
 
   return (
@@ -648,6 +691,46 @@ export default function DeFiPage() {
           </Card>
         </div>
       </div>
+
+      {/* Success Modal */}
+      <NotificationModal
+        open={showSuccessModal}
+        onOpenChange={setShowSuccessModal}
+        type="defi"
+        title={modalData.title}
+        message={modalData.message}
+        amount={modalData.amount}
+        currency={modalData.currency}
+        details={modalData.details}
+        showCopy={true}
+        copyText={`DeFi Transaction: ${modalData.title} | ${modalData.message} | Amount: ${modalData.amount} ${modalData.currency}`}
+      />
+
+      {/* Error Modal */}
+      <NotificationModal
+        open={showErrorModal}
+        onOpenChange={setShowErrorModal}
+        type="warning"
+        title={modalData.title}
+        message={modalData.message}
+        amount={modalData.amount}
+        currency={modalData.currency}
+        details={modalData.details}
+      />
+
+      {/* Action Modal */}
+      <NotificationModal
+        open={showActionModal}
+        onOpenChange={setShowActionModal}
+        type="defi"
+        title={modalData.title}
+        message={modalData.message}
+        amount={modalData.amount}
+        currency={modalData.currency}
+        details={modalData.details}
+        showCopy={true}
+        copyText={`DeFi Action: ${modalData.title} | ${modalData.message}`}
+      />
     </div>
   )
 }

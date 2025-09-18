@@ -9,12 +9,13 @@ import { DollarSign, TrendingUp, Shield, AlertTriangle, Calculator, Clock, Targe
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
+import { Progress } from '@/components/ui/progress'
+import { NotificationModal } from '@/components/ui/NotificationModal'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Progress } from '@/components/ui/progress'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 
 interface LoanApplication {
   loanAmount: string
@@ -32,6 +33,7 @@ export default function LoansPage() {
   const [collateralAmount, setCollateralAmount] = useState('')
   const [collateralType, setCollateralType] = useState('USDC')
   const [isLoading, setIsLoading] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const calculateLTV = () => {
     const loan = parseFloat(loanAmount) || 0
@@ -45,12 +47,12 @@ export default function LoansPage() {
     return { level: 'High', color: 'bg-red-100 text-red-800 border-red-200' }
   }
 
-  const handleLoanApplication = () => {
+  const handleSubmitApplication = () => {
     setIsLoading(true)
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false)
-      alert('Loan application submitted successfully!')
+      setShowSuccessModal(true)
     }, 2000)
   }
 
@@ -396,6 +398,26 @@ export default function LoansPage() {
           </Card>
         </div>
       </div>
+
+      {/* Success Modal */}
+      <NotificationModal
+        open={showSuccessModal}
+        onOpenChange={setShowSuccessModal}
+        type="loan"
+        title="Loan Application Submitted!"
+        message="Your loan application has been successfully submitted for review"
+        amount={formatCurrency(parseFloat(loanAmount) || 0)}
+        currency="USDC"
+        details={[
+          `Loan Amount: ${formatCurrency(parseFloat(loanAmount) || 0)} USDC`,
+          `Collateral: ${formatCurrency(parseFloat(collateralAmount) || 0)} ${collateralType}`,
+          `LTV Ratio: ${calculateLTV().toFixed(1)}%`,
+          `Application Status: Under Review`,
+          `Expected Review Time: 24-48 hours`
+        ]}
+        showCopy={true}
+        copyText={`Loan Application: ${formatCurrency(parseFloat(loanAmount) || 0)} USDC | Collateral: ${formatCurrency(parseFloat(collateralAmount) || 0)} ${collateralType} | LTV: ${calculateLTV().toFixed(1)}%`}
+      />
     </AuthGuard>
   )
 }

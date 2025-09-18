@@ -5,10 +5,11 @@ import { BarChart3, TrendingUp, TrendingDown, DollarSign, Plus, Filter, Search, 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import { NotificationModal } from '@/components/ui/NotificationModal'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Progress } from '@/components/ui/progress'
 import { formatCurrency, StablecoinSymbol } from '@/lib/data'
 
 interface TokenizedAsset {
@@ -156,6 +157,10 @@ export default function TokenizedAssetsPage() {
   const [isInvesting, setIsInvesting] = useState(false)
   const [investmentAmount, setInvestmentAmount] = useState('')
   const [investmentCurrency, setInvestmentCurrency] = useState<StablecoinSymbol>('USDC')
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showErrorModal, setShowErrorModal] = useState(false)
+  const [showWarningModal, setShowWarningModal] = useState(false)
+  const [modalData, setModalData] = useState({ title: '', message: '', amount: '', currency: '', details: [] as string[] })
 
   const categories = ['all', 'Government Bonds', 'Real Estate', 'Corporate Bonds', 'Precious Metals', 'Equity Index', 'Infrastructure']
   
@@ -200,13 +205,37 @@ export default function TokenizedAssetsPage() {
     if (selectedAsset) {
       document.getElementById('invest-button')?.scrollIntoView({ behavior: 'smooth' })
     } else {
-      alert('Please select an asset to start investing')
+      setModalData({
+        title: 'Select an Asset',
+        message: 'Please choose a tokenized asset to start investing',
+        amount: '',
+        currency: '',
+        details: [
+          'Browse available tokenized assets above',
+          'Compare APY rates and risk levels',
+          'Select an asset to see investment details',
+          'Start with as little as $25'
+        ]
+      })
+      setShowWarningModal(true)
     }
   }
 
   const handleInvestInAsset = async (asset: TokenizedAsset) => {
     if (!investmentAmount || parseFloat(investmentAmount) < asset.minInvestment) {
-      alert(`Minimum investment is ${formatCurrency(asset.minInvestment)}`)
+      setModalData({
+        title: 'Minimum Investment Required',
+        message: `Please invest at least ${formatCurrency(asset.minInvestment)} in ${asset.name}`,
+        amount: formatCurrency(asset.minInvestment),
+        currency: investmentCurrency,
+        details: [
+          `Asset: ${asset.name} (${asset.symbol})`,
+          `Minimum Investment: ${formatCurrency(asset.minInvestment)}`,
+          `Expected APY: ${asset.apy}%`,
+          `Risk Level: ${asset.riskLevel}`
+        ]
+      })
+      setShowErrorModal(true)
       return
     }
 
@@ -215,12 +244,37 @@ export default function TokenizedAssetsPage() {
       // Simulate investment API call
       await new Promise(resolve => setTimeout(resolve, 2000))
       
-      alert(`Successfully invested ${formatCurrency(parseFloat(investmentAmount))} ${investmentCurrency} in ${asset.name}!`)
+      setModalData({
+        title: 'Investment Successful!',
+        message: `Successfully invested in ${asset.name}`,
+        amount: formatCurrency(parseFloat(investmentAmount)),
+        currency: investmentCurrency,
+        details: [
+          `Asset: ${asset.name} (${asset.symbol})`,
+          `Investment Amount: ${formatCurrency(parseFloat(investmentAmount))} ${investmentCurrency}`,
+          `Expected Annual Return: ${formatCurrency(parseFloat(investmentAmount) * asset.apy / 100)}`,
+          `Risk Level: ${asset.riskLevel}`,
+          `Provider: ${asset.provider}`
+        ]
+      })
+      setShowSuccessModal(true)
       setInvestmentAmount('')
       
     } catch (error) {
       console.error('Investment failed:', error)
-      alert('Investment failed. Please try again.')
+      setModalData({
+        title: 'Investment Failed',
+        message: 'Unable to complete your investment at this time',
+        amount: investmentAmount,
+        currency: investmentCurrency,
+        details: [
+          'Please check your internet connection',
+          'Verify your account balance',
+          'Try again in a few moments',
+          'Contact support if the issue persists'
+        ]
+      })
+      setShowErrorModal(true)
     } finally {
       setIsInvesting(false)
     }
@@ -603,6 +657,42 @@ export default function TokenizedAssetsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Success Modal */}
+      <NotificationModal
+        open={showSuccessModal}
+        onOpenChange={setShowSuccessModal}
+        type="investment"
+        title={modalData.title}
+        message={modalData.message}
+        amount={modalData.amount}
+        currency={modalData.currency}
+        details={modalData.details}
+        showCopy={true}
+        copyText={`Investment: ${modalData.title} | ${modalData.message} | Amount: ${modalData.amount} ${modalData.currency}`}
+      />
+
+      {/* Error Modal */}
+      <NotificationModal
+        open={showErrorModal}
+        onOpenChange={setShowErrorModal}
+        type="error"
+        title={modalData.title}
+        message={modalData.message}
+        amount={modalData.amount}
+        currency={modalData.currency}
+        details={modalData.details}
+      />
+
+      {/* Warning Modal */}
+      <NotificationModal
+        open={showWarningModal}
+        onOpenChange={setShowWarningModal}
+        type="warning"
+        title={modalData.title}
+        message={modalData.message}
+        details={modalData.details}
+      />
     </div>
   )
 }

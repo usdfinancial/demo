@@ -1,9 +1,12 @@
+'use client';
+
 import { useState } from 'react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { ArrowUpDown } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ArrowUpDown, Loader2 } from 'lucide-react';
+import { NotificationModal } from '@/components/ui/NotificationModal';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Token {
   symbol: string;
@@ -30,6 +33,7 @@ export function SwapWidget() {
   const [toToken, setToToken] = useState<Token>(DEFAULT_TOKENS[1]);
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Mock exchange rate calculation
   const exchangeRate = fromToken.symbol === 'USDC' && toToken.symbol === 'USDT' ? 0.9998 : 1.0002;
@@ -45,8 +49,8 @@ export function SwapWidget() {
     // Simulate swap transaction
     await new Promise(resolve => setTimeout(resolve, 2000));
     setLoading(false);
-    // In a real implementation, this would execute the swap
-    alert('Swap completed! (This is a demo)');
+    // Show success modal instead of alert
+    setShowSuccessModal(true);
   };
 
   return (
@@ -144,6 +148,25 @@ export function SwapWidget() {
           {loading ? 'Swapping...' : 'Swap'}
         </Button>
       </CardContent>
+
+      <NotificationModal
+        open={showSuccessModal}
+        onOpenChange={setShowSuccessModal}
+        type="swap"
+        title="Swap Completed Successfully!"
+        message={`Successfully swapped ${amount} ${fromToken.symbol} to ${toAmount} ${toToken.symbol}`}
+        amount={toAmount}
+        currency={toToken.symbol}
+        details={[
+          `From: ${amount} ${fromToken.symbol}`,
+          `To: ${toAmount} ${toToken.symbol}`,
+          `Exchange Rate: 1 ${fromToken.symbol} = ${exchangeRate} ${toToken.symbol}`,
+          `Transaction Fee: 0.1% (included in rate)`,
+          `Network: Ethereum Sepolia Testnet`
+        ]}
+        showCopy={true}
+        copyText={`Swap: ${amount} ${fromToken.symbol} → ${toAmount} ${toToken.symbol} | Rate: ${exchangeRate} | Demo Transaction`}
+      />
     </Card>
   );
 }

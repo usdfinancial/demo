@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
+import { NotificationModal } from '@/components/ui/NotificationModal'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -53,8 +54,9 @@ const mockClaims: InsuranceClaim[] = [
 export default function InsurancePage() {
   const { user } = useEnhancedAuth()
   const [selectedTab, setSelectedTab] = useState('products')
-  const [selectedProduct, setSelectedProduct] = useState<InsuranceProduct | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<InsuranceProduct | null>(null)
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false)
 
   // Calculate metrics from actual data
@@ -116,7 +118,8 @@ export default function InsurancePage() {
   }
 
   const handlePurchase = (product: InsuranceProduct) => {
-    alert(`Purchasing ${product.name} for ${formatCurrency(product.premium)}`)
+    setSelectedProduct(product)
+    setShowPurchaseModal(true)
   }
 
   const formatDate = (dateString: string) => {
@@ -511,6 +514,27 @@ export default function InsurancePage() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Purchase Confirmation Modal */}
+        <NotificationModal
+          open={showPurchaseModal}
+          onOpenChange={setShowPurchaseModal}
+          type="insurance"
+          title="Insurance Policy Purchase"
+          message={selectedProduct ? `Successfully purchased ${selectedProduct.name}` : 'Policy purchase confirmed'}
+          amount={selectedProduct ? formatCurrency(selectedProduct.premium) : ''}
+          currency="USDC"
+          details={selectedProduct ? [
+            `Policy: ${selectedProduct.name}`,
+            `Coverage: ${formatCurrency(selectedProduct.coverage)}`,
+            `Premium: ${formatCurrency(selectedProduct.premium)} annually`,
+            `Risk Level: ${selectedProduct.riskLevel}`,
+            `Policy Status: Active immediately`,
+            `Coverage Period: 12 months from purchase date`
+          ] : []}
+          showCopy={true}
+          copyText={selectedProduct ? `Insurance Policy: ${selectedProduct.name} | Coverage: ${formatCurrency(selectedProduct.coverage)} | Premium: ${formatCurrency(selectedProduct.premium)}` : ''}
+        />
       </div>
     </AuthGuard>
   )

@@ -5,6 +5,8 @@ import { Settings, Lock, Unlock, CreditCard, Globe, Shield, AlertTriangle, Dolla
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import { NotificationModal } from '@/components/ui/NotificationModal'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -113,6 +115,8 @@ export default function CardControlsPage() {
   const [restrictions, setRestrictions] = useState(selectedCard.restrictions)
   const [notifications, setNotifications] = useState(selectedCard.notifications)
   const [isUpdating, setIsUpdating] = useState(false)
+  const [showSecurityModal, setShowSecurityModal] = useState(false)
+  const [securityAction, setSecurityAction] = useState<'report' | 'travel' | null>(null)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -603,7 +607,8 @@ export default function CardControlsPage() {
                     `2. Fraud investigation initiated\n` +
                     `3. Replacement card issued\n` +
                     `4. USDC balance remains secure and accessible`
-                  alert(message)
+                  setSecurityAction('report')
+                  setShowSecurityModal(true)
                 }}
                 title="Report lost or stolen card with instant security protection"
               >
@@ -641,7 +646,8 @@ export default function CardControlsPage() {
                     `3. Set travel-specific spending limits\n` +
                     `4. Receive confirmation and travel tips\n\n` +
                     `Your USDC balance travels with you - no currency conversion needed!`
-                  alert(message)
+                  setSecurityAction('travel')
+                  setShowSecurityModal(true)
                 }}
                 title="Set up travel notice to prevent transaction declines abroad"
               >
@@ -704,6 +710,35 @@ export default function CardControlsPage() {
           </Card>
         </div>
       </div>
+
+      {/* Security Action Modal */}
+      <NotificationModal
+        open={showSecurityModal}
+        onOpenChange={setShowSecurityModal}
+        type="card"
+        title={securityAction === 'report' ? 'Card Security Alert' : 'Travel Notice Activated'}
+        message={securityAction === 'report' 
+          ? 'Your card has been immediately secured and fraud protection activated'
+          : 'Travel notice has been set up successfully for international transactions'
+        }
+        details={securityAction === 'report' ? [
+          `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
+          'Status: Immediately locked for security',
+          'Fraud Protection: Activated',
+          'Replacement Card: 1-2 business days',
+          'USDC Balance: Secure and accessible',
+          'Zero Liability: Full protection against fraud'
+        ] : [
+          `Card: ${selectedCard.name} ending in ${selectedCard.last4}`,
+          'International Transactions: Enabled',
+          'Travel Alerts: Activated',
+          'Foreign Exchange: No fees with USDC',
+          'Security Monitoring: Enhanced for travel',
+          'Support: 24/7 available while traveling'
+        ]}
+        showCopy={true}
+        copyText={`Card Security: ${securityAction === 'report' ? 'Lost/Stolen Report' : 'Travel Notice'} | Card: ${selectedCard.last4} | Status: ${securityAction === 'report' ? 'Secured' : 'Travel Ready'}`}
+      />
     </div>
   )
 }

@@ -8,6 +8,8 @@ import { Activity, Download, RefreshCw, Search, TrendingUp, TrendingDown, Dollar
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import { NotificationModal } from '@/components/ui/NotificationModal'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -22,11 +24,13 @@ const formatCurrency = (amount: number): string => {
 
 export default function TransactionsPage() {
   const { user } = useEnhancedAuth()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filterType, setFilterType] = useState('all')
-  const [filterStatus, setFilterStatus] = useState('all')
-  const [isLoading, setIsLoading] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filterType, setFilterType] = useState<string>('all')
+  const [filterStatus, setFilterStatus] = useState<string>('all')
   const [selectedTransaction, setSelectedTransaction] = useState<EnhancedTransaction | null>(null)
+  const [showTransactionModal, setShowTransactionModal] = useState(false)
+  const [showExportModal, setShowExportModal] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   // Calculate summary
   const totalTransactions = enhancedTransactions.length
@@ -55,7 +59,7 @@ export default function TransactionsPage() {
   }
 
   const handleExport = () => {
-    alert('Transaction export started. You will receive an email when ready.')
+    setShowExportModal(true)
   }
 
   if (!user) {
@@ -350,12 +354,116 @@ export default function TransactionsPage() {
                       ))}
                     </div>
                   </div>
-                )}
-              </div>
             )}
-          </DialogContent>
-        </Dialog>
+          </div>
+        </div>
       </div>
-    </AuthGuard>
-  )
-}
+    ))}
+  </div>
+</CardContent>
+</Card>
+
+{/* Transaction Detail Modal */}
+<Dialog open={!!selectedTransaction} onOpenChange={() => setSelectedTransaction(null)}>
+  <DialogContent className="max-w-2xl">
+    <DialogHeader>
+      <DialogTitle>Transaction Details</DialogTitle>
+      <DialogDescription>
+        Complete information about this transaction
+      </DialogDescription>
+    </DialogHeader>
+    {selectedTransaction && (
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">Transaction ID</label>
+            <p className="font-mono text-sm">{selectedTransaction.id}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">Type</label>
+            <p className="capitalize">{selectedTransaction.type}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">Amount</label>
+            <p className={`font-semibold ${
+              selectedTransaction.amount > 0 ? 'text-green-600' : 'text-slate-900'
+            }`}>
+              {selectedTransaction.amount > 0 ? '+' : ''}
+              {formatCurrency(selectedTransaction.amount)}
+            </p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">Status</label>
+            <Badge variant={selectedTransaction.status === 'completed' ? 'default' : 'secondary'}>
+              {selectedTransaction.status}
+            </Badge>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">Date</label>
+            <p>{formatDate(selectedTransaction.timestamp)}</p>
+          </div>
+          {selectedTransaction.chainId && (
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Network</label>
+              <p>{getChainName(selectedTransaction.chainId)}</p>
+            </div>
+          )}
+        </div>
+        
+        <div>
+          <label className="text-sm font-medium text-muted-foreground">Description</label>
+          <p>{selectedTransaction.description}</p>
+        </div>
+        
+        {selectedTransaction.merchantInfo && (
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">Merchant</label>
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <p className="font-medium">{selectedTransaction.merchantInfo.name}</p>
+              <p className="text-sm text-muted-foreground">{selectedTransaction.merchantInfo.category}</p>
+              {selectedTransaction.merchantInfo.location && (
+                <p className="text-sm text-muted-foreground">{selectedTransaction.merchantInfo.location}</p>
+              )}
+            </div>
+          </div>
+        )}
+        
+        {selectedTransaction.tags && selectedTransaction.tags.length > 0 && (
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">Tags</label>
+            <div className="flex gap-2 mt-1">
+              {selectedTransaction.tags.map(tag => (
+                <Badge key={tag} variant="secondary">{tag}</Badge>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+  </DialogContent>
+</Dialog>
+
+{/* Export Modal */}
+<NotificationModal
+  open={showExportModal}
+  onOpenChange={setShowExportModal}
+  type="transaction"
+  title="Transaction Export Started"
+  message="Your transaction export has been initiated successfully"
+  details={[
+    `Total Transactions: ${filteredTransactions.length}`,
+    `Export Format: CSV with full transaction details`,
+    `Processing Time: 2-3 minutes`,
+    `Delivery Method: Email notification when ready`,
+    `File Size: Estimated ${Math.ceil(filteredTransactions.length / 100)}MB`
+  ]}
+  actionLabel="View Export History"
+  onAction={() => {
+    console.log('Demo: Would show export history')
+    setShowExportModal(false)
+  }}
+  showCopy={true}
+  copyText={`Transaction Export: ${filteredTransactions.length} transactions | ${new Date().toISOString()}`}
+/>
+</AuthGuard>
+</AuthGuard>

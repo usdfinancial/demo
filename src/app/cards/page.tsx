@@ -278,14 +278,25 @@ export default function CardsPage() {
                     <CreditCard className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
                     <p className="text-sm font-medium">Need another card?</p>
                     <p className="text-xs text-muted-foreground mb-3">Order physical or create virtual cards instantly</p>
-                    <Button 
-                      size="sm" 
-                      className="bg-gradient-to-r from-emerald-500 to-teal-500"
-                      onClick={() => window.location.href = '/cards/virtual'}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add Card
-                    </Button>
+                    <div className="flex gap-2 justify-center">
+                      <Button 
+                        size="sm" 
+                        className="bg-gradient-to-r from-emerald-500 to-teal-500"
+                        onClick={() => window.location.href = '/cards/physical'}
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Order Physical
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+                        onClick={() => window.location.href = '/cards/virtual'}
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Create Virtual
+                      </Button>
+                    </div>
                   </div>
                 </TabsContent>
 

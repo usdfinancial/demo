@@ -130,6 +130,22 @@ export default function PhysicalCardsPage() {
     }
   }
 
+  const handleStartOrder = () => {
+    // Smooth scroll to the card selection section
+    const cardSelectionElement = document.querySelector('[data-card-selection]')
+    if (cardSelectionElement) {
+      cardSelectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+    
+    // After a short delay, switch to shipping tab if needed
+    setTimeout(() => {
+      const shippingTab = document.getElementById('shipping-tab')
+      if (shippingTab) {
+        shippingTab.click()
+      }
+    }, 500)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -142,7 +158,7 @@ export default function PhysicalCardsPage() {
         <div className="flex items-center space-x-2">
           <Button 
             className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-            onClick={() => document.getElementById('shipping-tab')?.click()}
+            onClick={handleStartOrder}
           >
             <CreditCard className="h-4 w-4 mr-2" />
             Order New Card
@@ -204,7 +220,7 @@ export default function PhysicalCardsPage() {
       )}
 
       {/* Card Selection */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3" data-card-selection>
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>

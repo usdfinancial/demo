@@ -120,4 +120,21 @@ body {
       transform: translateY(0);
     }
   }
+
+  /* Demo stripe shimmer animation */
+  .animate-shimmer {
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%) skewX(-12deg);
+    }
+    50% {
+      transform: translateX(0%) skewX(-12deg);
+    }
+    100% {
+      transform: translateX(100%) skewX(-12deg);
+    }
+  }
 }

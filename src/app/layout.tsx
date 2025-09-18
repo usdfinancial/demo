@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { EnhancedAuthProvider } from "@/components/providers/EnhancedAuthProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import ClientOnlyWrapper from "@/components/ClientOnlyWrapper";
+import { DemoStripe } from "@/components/DemoStripe";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
+        <DemoStripe />
         <ErrorBoundary>
           <ClientOnlyWrapper>
             <EnhancedAuthProvider>

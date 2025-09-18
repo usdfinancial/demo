@@ -302,7 +302,7 @@ export function AppShell({ children }: AppShellProps) {
 
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-8">
       <div className="grid min-h-screen md:grid-cols-[280px_1fr]">
         {/* Desktop Sidebar */}
         <aside className="hidden border-r bg-muted/40 md:block">

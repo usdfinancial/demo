@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { DemoIndicator } from '@/components/ui/DemoIndicator'
 import { useEnhancedAuth } from '@/components/providers/EnhancedAuthProvider'
 import { formatCurrency, StablecoinSymbol } from '@/lib/data'
 
@@ -247,7 +248,8 @@ export function SendTransactionFlow({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-lg">
+      <Card className="w-full max-w-lg relative">
+        <DemoIndicator variant="default" />
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 p-3 rounded-full bg-gradient-to-r from-emerald-100 to-teal-100">
             {getStepIcon()}

@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { NotificationModal } from '@/components/ui/NotificationModal';
+import { DemoIndicator } from '@/components/ui/DemoIndicator';
 import useCCTP from '@/hooks/useCCTP';
 // import { useAlchemyCCTP } from '@/lib/blockchain/cctpAlchemyIntegration';
 import { CCTPNetwork, CCTP_TESTNET_CONTRACTS } from '@/lib/blockchain/stablecoin/cctpAdapter';
@@ -432,7 +433,8 @@ export function CCTPBridgeWidget({ className = '', onTransferComplete }: CCTPBri
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Main Transfer Form */}
-      <Card>
+      <Card className="relative">
+        <DemoIndicator variant="default" />
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <span>🔵</span>

@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { DemoIndicator } from '@/components/ui/DemoIndicator'
 import { 
   Copy, 
   ExternalLink, 
@@ -198,7 +199,8 @@ export function EnhancedDepositModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto relative">
+        <DemoIndicator variant="floating" />
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2 text-2xl">
             <ArrowDownLeft className="w-6 h-6 text-emerald-600" />

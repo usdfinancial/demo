@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { DemoIndicator } from '@/components/ui/DemoIndicator'
 import { 
   CheckCircle, 
   AlertTriangle, 
@@ -174,7 +175,8 @@ export function NotificationModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg relative">
+        <DemoIndicator variant="minimal" />
         <DialogHeader className="text-center pb-4">
           <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-4">
             <Icon className="w-8 h-8 text-white" />

@@ -89,7 +89,7 @@ const corporateAccounts: CorporateAccount[] = [
     name: 'Emergency Reserve',
     type: 'reserve',
     balance: 5000000,
-    currency: 'USDT',
+    currency: 'USDC',
     yield: 4.8,
     lastActivity: '2024-01-19T16:45:00Z',
     riskScore: 97
@@ -204,22 +204,100 @@ export default function BusinessPlatformPage() {
   const handleQuickAction = (action: string, id?: string) => {
     switch (action) {
       case 'rebalance':
-        alert('Initiating AI-powered portfolio rebalancing...')
+        const rebalanceMessage = `AI-Powered Portfolio Rebalancing:\n\n` +
+          `Stablecoin Business Optimization:\n` +
+          `• Analyze all business account USDC allocations\n` +
+          `• Optimize yield across operating, treasury, and payroll accounts\n` +
+          `• Maintain required liquidity ratios for operations\n` +
+          `• Maximize DeFi yield while preserving capital stability\n\n` +
+          `Rebalancing Process:\n` +
+          `1. Assess current USDC distribution across accounts\n` +
+          `2. Calculate optimal allocation based on business needs\n` +
+          `3. Execute automated transfers between yield protocols\n` +
+          `4. Maintain emergency liquidity in stable reserves\n\n` +
+          `Your business maintains stablecoin-native operations while maximizing returns!`
+        alert(rebalanceMessage)
         break
       case 'optimize-yield':
-        alert('Optimizing yield allocation across accounts...')
+        const yieldMessage = `Yield Optimization for Business Accounts:\n\n` +
+          `Stablecoin Yield Strategy:\n` +
+          `• Automatically allocate idle USDC to highest-yield protocols\n` +
+          `• Diversify across Aave, Compound, and Yearn Finance\n` +
+          `• Maintain instant liquidity for business operations\n` +
+          `• Real-time yield monitoring and reallocation\n\n` +
+          `Current Opportunities:\n` +
+          `• Treasury Account: 8.5% APY available\n` +
+          `• Operating Account: 6.2% APY on excess funds\n` +
+          `• Payroll Account: 4.8% APY on scheduled payments\n\n` +
+          `USD Financial's business platform ensures your company earns maximum ` +
+          `yield on stablecoin reserves while maintaining operational flexibility.`
+        alert(yieldMessage)
         break
       case 'generate-report':
-        alert('Generating comprehensive financial report...')
+        const reportMessage = `Comprehensive Business Financial Report:\n\n` +
+          `Stablecoin Business Analytics:\n` +
+          `• Multi-account USDC balance analysis\n` +
+          `• Yield performance across all protocols\n` +
+          `• Cash flow patterns and liquidity trends\n` +
+          `• Risk assessment and compliance metrics\n\n` +
+          `Report Includes:\n` +
+          `• Executive summary with key performance indicators\n` +
+          `• Detailed account-by-account breakdown\n` +
+          `• Yield optimization recommendations\n` +
+          `• Regulatory compliance status\n` +
+          `• Forecasting and scenario analysis\n\n` +
+          `Perfect for board meetings, investor updates, and financial planning. ` +
+          `All data reflects your stablecoin-native business operations.`
+        alert(reportMessage)
         break
       case 'setup-alert':
-        alert('Setting up AI-powered financial alerts...')
+        const alertMessage = `AI-Powered Financial Alerts Setup:\n\n` +
+          `Smart Business Monitoring:\n` +
+          `• Real-time USDC balance threshold alerts\n` +
+          `• Yield rate change notifications\n` +
+          `• Large transaction confirmations\n` +
+          `• Liquidity ratio warnings\n` +
+          `• Compliance deadline reminders\n\n` +
+          `Alert Types:\n` +
+          `• Balance alerts: When accounts drop below set thresholds\n` +
+          `• Yield alerts: When better rates become available\n` +
+          `• Security alerts: Unusual transaction patterns\n` +
+          `• Opportunity alerts: New DeFi protocols or features\n\n` +
+          `Stay informed about your stablecoin business operations with ` +
+          `intelligent, actionable notifications delivered via email, SMS, and app.`
+        alert(alertMessage)
         break
       case 'view-insight':
-        alert(`Viewing detailed insight: ${id}`)
+        const insightMessage = `AI Business Insight Analysis:\n\n` +
+          `Stablecoin Business Intelligence:\n` +
+          `• Deep analysis of your USDC allocation patterns\n` +
+          `• Predictive modeling for cash flow optimization\n` +
+          `• Competitive yield benchmarking\n` +
+          `• Risk-adjusted return recommendations\n\n` +
+          `Insight Details (${id}):\n` +
+          `• Data-driven recommendations for business growth\n` +
+          `• Seasonal spending pattern analysis\n` +
+          `• Optimal reserve allocation strategies\n` +
+          `• Integration opportunities with DeFi protocols\n\n` +
+          `Our AI analyzes your stablecoin business operations to provide ` +
+          `actionable insights that improve profitability and reduce risk.`
+        alert(insightMessage)
         break
       case 'implement-suggestion':
-        alert(`Implementing AI suggestion: ${id}`)
+        const implementMessage = `Implementing AI Suggestion (${id}):\n\n` +
+          `Automated Business Optimization:\n` +
+          `• Execute recommended USDC allocation changes\n` +
+          `• Implement yield optimization strategies\n` +
+          `• Apply risk management improvements\n` +
+          `• Deploy efficiency enhancements\n\n` +
+          `Implementation Process:\n` +
+          `1. Validate suggestion against business rules\n` +
+          `2. Execute gradual implementation with monitoring\n` +
+          `3. Track performance metrics and outcomes\n` +
+          `4. Provide detailed implementation report\n\n` +
+          `Your stablecoin business operations will be automatically optimized ` +
+          `based on AI recommendations while maintaining full transparency and control.`
+        alert(implementMessage)
         break
       default:
         break

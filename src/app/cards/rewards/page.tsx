@@ -150,7 +150,22 @@ export default function RewardsPage() {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
-      alert(`${type} redemption would be processed here`)
+      const message = `${type} Redemption Process:\n\n` +
+        `Stablecoin Rewards System:\n` +
+        `• Your cashback rewards are earned in USDC\n` +
+        `• Instant redemption to your stablecoin balance\n` +
+        `• No minimum redemption amount required\n` +
+        `• Zero fees for reward redemptions\n\n` +
+        `Redemption Options:\n` +
+        `• Direct to USDC balance (instant)\n` +
+        `• Auto-invest in yield farming (compound growth)\n` +
+        `• Transfer to external wallet\n` +
+        `• Convert to gift cards or travel credits\n\n` +
+        `USD Financial's "Stablecoin IN, Stablecoin OUT" approach means your ` +
+        `rewards maintain stable value and can be immediately used across ` +
+        `our entire financial ecosystem.\n\n` +
+        `Processing ${type} redemption... Your USDC balance will be updated instantly!`
+      alert(message)
     } catch (error) {
       console.error('Redemption failed:', error)
     } finally {

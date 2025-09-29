@@ -240,7 +240,7 @@ export default function LoansPage() {
 
                     <Button 
                       className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-                      onClick={handleLoanApplication}
+                      onClick={handleSubmitApplication}
                       disabled={!selectedProduct || !loanAmount || !collateralAmount || isLoading}
                     >
                       {isLoading ? (
